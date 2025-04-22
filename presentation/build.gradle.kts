@@ -41,11 +41,16 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
+    // Timber
     implementation(libs.timber)
 
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    // Compose
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
