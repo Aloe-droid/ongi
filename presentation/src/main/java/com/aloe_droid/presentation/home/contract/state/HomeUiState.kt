@@ -1,6 +1,7 @@
 package com.aloe_droid.presentation.home.contract.state
 
 import androidx.compose.runtime.Stable
+import com.aloe_droid.presentation.base.UiContract
 
 @Stable
-data class HomeUiState(val test: String)
+data object HomeUiState : UiContract.State

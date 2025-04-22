@@ -44,9 +44,17 @@ android {
 }
 
 dependencies {
-    implementation(libs.timber)
+    implementation(project(":data"))
+    implementation(project(":domain"))
     implementation(project(":presentation"))
 
+    // Log
+    implementation(libs.timber)
+
+    // Splash
+    implementation(libs.androidx.core.splashscreen)
+
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
@@ -55,4 +63,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material)
+    testImplementation(libs.junit)
 }
