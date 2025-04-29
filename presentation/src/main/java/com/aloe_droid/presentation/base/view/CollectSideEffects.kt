@@ -1,8 +1,7 @@
-package com.aloe_droid.presentation.base.ui
+package com.aloe_droid.presentation.base.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.aloe_droid.presentation.base.UiContract
 import kotlinx.coroutines.flow.Flow
 
 @Composable
