@@ -43,6 +43,17 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+    // Location
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
+
+    // CustomTab
+    implementation(libs.androidx.browser)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     // Timber
     implementation(libs.timber)
 
