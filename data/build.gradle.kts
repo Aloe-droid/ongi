@@ -49,6 +49,10 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+    // Location
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
+
     // Datetime
     implementation(libs.kotlinx.datetime)
 
