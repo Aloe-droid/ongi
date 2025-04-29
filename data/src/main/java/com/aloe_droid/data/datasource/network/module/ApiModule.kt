@@ -1,5 +1,7 @@
 package com.aloe_droid.data.datasource.network.module
 
+import com.aloe_droid.data.datasource.network.api.BannerAPI
+import com.aloe_droid.data.datasource.network.api.StoreAPI
 import com.aloe_droid.data.datasource.network.api.UserAPI
 import dagger.Module
 import dagger.Provides
@@ -17,4 +19,11 @@ object ApiModule {
     @Provides
     fun providesUserAPI(retrofit: Retrofit): UserAPI = retrofit.create()
 
+    @Singleton
+    @Provides
+    fun providesBannerAPI(retrofit: Retrofit): BannerAPI = retrofit.create()
+
+    @Singleton
+    @Provides
+    fun providesStoreAPI(retrofit: Retrofit): StoreAPI = retrofit.create()
 }

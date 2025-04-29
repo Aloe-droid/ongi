@@ -1,7 +1,7 @@
 package com.aloe_droid.presentation.search
 
 import androidx.lifecycle.SavedStateHandle
-import com.aloe_droid.presentation.base.BaseViewModel
+import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.search.contract.effect.SearchEffect
 import com.aloe_droid.presentation.search.contract.event.SearchEvent
 import com.aloe_droid.presentation.search.contract.state.SearchUiState

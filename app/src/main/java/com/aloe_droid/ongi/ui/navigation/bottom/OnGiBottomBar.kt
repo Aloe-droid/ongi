@@ -11,10 +11,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.aloe_droid.presentation.base.UiContract.Route
-import com.aloe_droid.presentation.base.ui.Black
-import com.aloe_droid.presentation.base.ui.Gray
-import com.aloe_droid.presentation.base.ui.ZeroDp
+import com.aloe_droid.ongi.ui.theme.SelectColor
+import com.aloe_droid.ongi.ui.theme.UnSelectColor
+import com.aloe_droid.presentation.base.view.UiContract.Route
+import com.aloe_droid.presentation.base.theme.ZeroDp
 
 @Composable
 fun OnGiBottomBar(
@@ -33,7 +33,7 @@ fun OnGiBottomBar(
                     }
                 } == true
                 val res: Int = if (isSelected) selectedIconRes else unSelectedIconRes
-                val color: Color = if(isSelected) Black else Gray
+                val color: Color = if(isSelected) SelectColor else UnSelectColor
 
                 NavigationBarItem(
                     icon = {

@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.aloe_droid.ongi.ui.theme.OnGiTheme
 import com.aloe_droid.presentation.splash.SplashViewModel
 import com.aloe_droid.presentation.splash.contract.effect.SplashEffect
+import com.aloe_droid.presentation.splash.contract.event.SplashEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterIsInstance
@@ -28,10 +29,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         initView()
         initCollect()
+        if (splashViewModel.currentState.isInitState) {
+            val event: SplashEvent = SplashEvent.CheckAuth
+            splashViewModel.sendEvent(event = event)
+        }
 
         enableEdgeToEdge()
         setContent {
-            OnGiTheme {
+            OnGiTheme(dynamicColor = false) {
                 OnGiApp()
             }
         }

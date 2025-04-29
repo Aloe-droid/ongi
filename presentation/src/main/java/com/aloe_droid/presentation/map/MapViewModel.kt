@@ -1,7 +1,7 @@
 package com.aloe_droid.presentation.map
 
 import androidx.lifecycle.SavedStateHandle
-import com.aloe_droid.presentation.base.BaseViewModel
+import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.map.contract.effect.MapEffect
 import com.aloe_droid.presentation.map.contract.event.MapEvent
 import com.aloe_droid.presentation.map.contract.state.MapUiState

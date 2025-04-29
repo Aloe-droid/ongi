@@ -3,7 +3,7 @@ package com.aloe_droid.presentation.splash
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aloe_droid.domain.usecase.FindOrCreateUserUseCase
-import com.aloe_droid.presentation.base.BaseViewModel
+import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.splash.contract.effect.SplashEffect
 import com.aloe_droid.presentation.splash.contract.event.SplashEvent
 import com.aloe_droid.presentation.splash.contract.state.SplashUiState
@@ -18,8 +18,7 @@ class SplashViewModel @Inject constructor(
 ) : BaseViewModel<SplashUiState, SplashEvent, SplashEffect>(savedStateHandle) {
 
     override fun initState(savedStateHandle: SavedStateHandle): SplashUiState {
-        sendEvent(SplashEvent.CheckAuth)
-        return SplashUiState(isLoading = true)
+        return SplashUiState()
     }
 
     override fun handleEvent(event: SplashEvent) = when (event) {
@@ -35,7 +34,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             findOrCreateUserUseCase().safeCollect {
                 updateState { splashUiState: SplashUiState ->
-                    splashUiState.copy(isLoading = false)
+                    splashUiState.copy(isLoading = false, isInitState = false)
                 }
             }
         }
