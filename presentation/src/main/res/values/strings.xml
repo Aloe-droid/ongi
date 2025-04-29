@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading">데이터를 불러오고 있어요</string>
+
+    <string name="favorite">즐겨 찾기</string>
+    <string name="favorite_stores">많이 즐겨 찾은 착한 가격 업소</string>
+    <string name="nearby_stores">주변 착한 가격 업소</string>
+
+
+    <string name="category_korean">한식</string>
+    <string name="category_western">양식</string>
+    <string name="category_japanese">일식</string>
+    <string name="category_chinese">중식</string>
+    <string name="category_bakery">베이커리</string>
+    <string name="category_restaurant">기타요식업</string>
+    <string name="category_bath">목욕</string>
+    <string name="category_laundry">세탁</string>
+    <string name="category_hotel">숙박</string>
+    <string name="category_hair">미용</string>
+    <string name="category_etc">기타</string>
+
+    <string name="deny_location">위치 권한을 거부하셨습니다.\n기본 위치는 서울 중심입니다.</string>
+    <string name="deny_gps">GPS가 꺼져 있습니다.\n기본 위치는 서울 중심입니다.</string>
+    <string name="location_dialog_title">위치 정보가 필요해요</string>
+    <string name="location_dialog_description">\'온기\'에서 내 주변의 착한 가격 업소를 찾아드리기 위해 위치 정보 접근 권한이 필요합니다.</string>
+    <string name="location_dialog_app_name">온기</string>
+    <string name="location_dialog_confirm">권한 설정하기</string>
+    <string name="location_dialog_dismiss">나중에 하기</string>
+    <string name="location_dialog_privacy_info">위치 정보는 주변 업소 검색 목적으로만 사용되며, 앱을 종료하면 저장되지 않습니다.</string>
+
+</resources>
