@@ -1,9 +1,5 @@
 package com.aloe_droid.presentation
 
-import com.aloe_droid.presentation.base.UiContract.State
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import org.junit.Test
 
 import org.junit.Assert.*
