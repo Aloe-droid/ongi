@@ -20,8 +20,8 @@ import com.aloe_droid.ongi.ui.navigation.NavUtil.Companion.safeMove
 import com.aloe_droid.ongi.ui.navigation.OnGiNavHost
 import com.aloe_droid.ongi.ui.navigation.bottom.BottomRoute
 import com.aloe_droid.ongi.ui.navigation.bottom.OnGiBottomBar
-import com.aloe_droid.presentation.base.UiContract
-import com.aloe_droid.presentation.home.contract.route.Home
+import com.aloe_droid.presentation.base.view.UiContract
+import com.aloe_droid.presentation.home.contract.Home
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,6 +56,7 @@ fun OnGiApp(navController: NavHostController = rememberNavController()) {
             startRoute = Home,
             showSnackMessage = { snackBarVisuals: SnackbarVisuals ->
                 scope.launch {
+                    snackBarHostState.currentSnackbarData?.dismiss()
                     snackBarHostState.showSnackbar(visuals = snackBarVisuals)
                 }
             }

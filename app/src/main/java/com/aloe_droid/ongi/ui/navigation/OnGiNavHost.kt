@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.aloe_droid.presentation.base.UiContract
-import com.aloe_droid.presentation.home.contract.route.homeScreen
+import com.aloe_droid.presentation.base.view.UiContract
+import com.aloe_droid.presentation.home.homeScreen
 import com.aloe_droid.presentation.map.contract.route.mapScreen
 import com.aloe_droid.presentation.search.contract.route.searchScreen
 import com.aloe_droid.presentation.setting.contract.route.settingScreen

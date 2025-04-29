@@ -3,8 +3,8 @@ package com.aloe_droid.ongi.ui.navigation.bottom
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import com.aloe_droid.ongi.R
-import com.aloe_droid.presentation.base.UiContract
-import com.aloe_droid.presentation.home.contract.route.Home
+import com.aloe_droid.presentation.base.view.UiContract
+import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.map.contract.route.Map
 import com.aloe_droid.presentation.search.contract.route.Search
 import com.aloe_droid.presentation.setting.contract.route.Setting
