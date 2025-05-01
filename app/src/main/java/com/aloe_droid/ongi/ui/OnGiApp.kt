@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aloe_droid.ongi.ui.navigation.NavUtil.Companion.safeMove
 import com.aloe_droid.ongi.ui.navigation.OnGiNavHost
+import com.aloe_droid.ongi.ui.navigation.OnGiTopBar
 import com.aloe_droid.ongi.ui.navigation.bottom.BottomRoute
 import com.aloe_droid.ongi.ui.navigation.bottom.OnGiBottomBar
 import com.aloe_droid.presentation.base.view.UiContract
@@ -33,6 +34,15 @@ fun OnGiApp(navController: NavHostController = rememberNavController()) {
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState)
+        },
+        topBar = {
+            backStackEntry?.let {
+                OnGiTopBar(
+                    backStackEntry = it,
+                    navigateUp = { navController.safeMove { navigateUp() } },
+                    navigateToSearch = {  }
+                )
+            }
         },
         bottomBar = {
             OnGiBottomBar(
