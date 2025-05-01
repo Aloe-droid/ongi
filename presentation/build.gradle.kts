@@ -43,6 +43,9 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+    // Paging
+    implementation(libs.androidx.paging.compose)
+
     // Location
     implementation(libs.play.services.location)
     implementation(libs.accompanist.permissions)
