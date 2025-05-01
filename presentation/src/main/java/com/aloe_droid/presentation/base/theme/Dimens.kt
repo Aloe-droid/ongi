@@ -24,6 +24,8 @@ val DefaultCornerRadius: Dp = 15.dp
 
 val MaxGridHeight: Dp = 300.dp
 
+val DefaultTopBarMaxHeight: Dp = 50.dp
+
 const val DefaultGridCellSize: Int = 5
 const val DefaultImageRatio: Float = 16f / 9f
 const val DefaultDelayTime: Long = 3_000L
