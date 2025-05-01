@@ -19,6 +19,7 @@ import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.component.PermissionHandler
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
@@ -29,7 +30,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
 
 @OptIn(ExperimentalPermissionsApi::class)
-fun NavGraphBuilder.homeScreen(showSnackMessage: (SnackbarVisuals) -> Unit) = composable<Home> {
+fun NavGraphBuilder.homeScreen(
+    showSnackMessage: (SnackbarVisuals) -> Unit,
+    navigateToFilteredStore: (StoreFilter) -> Unit,
+) = composable<Home> {
+
     val homeViewModel: HomeViewModel = hiltViewModel()
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val context: Context = LocalContext.current
@@ -53,7 +58,8 @@ fun NavGraphBuilder.homeScreen(showSnackMessage: (SnackbarVisuals) -> Unit) = co
             }
 
             is HomeEffect.NavigateStoreList -> {
-                showSnackMessage(BaseSnackBarVisuals("넘어갑니다. ${sideEffect.filter}"))
+                val filter: StoreFilter = sideEffect.filter
+                navigateToFilteredStore(filter)
             }
         }
     }

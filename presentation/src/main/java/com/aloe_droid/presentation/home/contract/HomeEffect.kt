@@ -1,7 +1,7 @@
 package com.aloe_droid.presentation.home.contract
 
 import com.aloe_droid.presentation.base.view.UiContract
-import com.aloe_droid.presentation.store.data.StoreFilter
+import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import java.util.UUID
 
 sealed class HomeEffect : UiContract.SideEffect {

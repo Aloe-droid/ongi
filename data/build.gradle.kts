@@ -49,6 +49,9 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+    // Paging
+    implementation(libs.androidx.paging.runtime)
+
     // Location
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)

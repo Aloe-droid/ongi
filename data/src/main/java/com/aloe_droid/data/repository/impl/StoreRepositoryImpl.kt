@@ -1,9 +1,16 @@
 package com.aloe_droid.data.repository.impl
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.aloe_droid.data.common.Dispatcher
 import com.aloe_droid.data.common.DispatcherType
 import com.aloe_droid.data.datasource.dto.store.StoreDTO
+import com.aloe_droid.data.datasource.dto.store.StorePage
 import com.aloe_droid.data.datasource.network.source.StoreDataSource
+import com.aloe_droid.data.datasource.network.source.StorePagingSource
+import com.aloe_droid.data.repository.mapper.StoreMapper.toStore
 import com.aloe_droid.data.repository.mapper.StoreMapper.toStoreList
 import com.aloe_droid.domain.entity.Store
 import com.aloe_droid.domain.entity.StoreQuery
@@ -21,7 +28,22 @@ class StoreRepositoryImpl @Inject constructor(
 
     override fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>> = storeDataSource
         .getStoreList(storeQuery)
-        .map { list: List<StoreDTO> -> list.toStoreList() }
+        .map { storePage: StorePage -> storePage.stores.toStoreList() }
         .flowOn(ioDispatcher)
 
+    override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                StorePagingSource(storeDataSource = storeDataSource, storeQuery = storeQuery)
+            }
+        ).flow.map { pagingData: PagingData<StoreDTO> ->
+            pagingData.map { storeDTO: StoreDTO ->
+                storeDTO.toStore()
+            }
+        }.flowOn(ioDispatcher)
+    }
 }
