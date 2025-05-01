@@ -1,6 +1,6 @@
 package com.aloe_droid.data.datasource.network.source
 
-import com.aloe_droid.data.datasource.dto.store.StoreDTO
+import com.aloe_droid.data.datasource.dto.store.StorePage
 import com.aloe_droid.data.datasource.network.api.StoreAPI
 import com.aloe_droid.data.datasource.network.util.ApiExt.Companion.safeApiCallToFlow
 import com.aloe_droid.domain.entity.StoreQuery
@@ -9,8 +9,7 @@ import javax.inject.Inject
 
 class StoreDataSourceImpl @Inject constructor(private val storeAPI: StoreAPI) : StoreDataSource {
 
-    override fun getStoreList(storeQuery: StoreQuery): Flow<List<StoreDTO>> = safeApiCallToFlow {
+    override fun getStoreList(storeQuery: StoreQuery): Flow<StorePage> = safeApiCallToFlow {
         storeAPI.getStores(storeQuery.toQueryMap())
     }
-
 }
