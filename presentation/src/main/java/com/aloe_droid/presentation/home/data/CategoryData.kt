@@ -2,7 +2,7 @@ package com.aloe_droid.presentation.home.data
 
 import androidx.compose.runtime.Immutable
 import com.aloe_droid.presentation.R
-import com.aloe_droid.presentation.store.data.StoreCategory
+import com.aloe_droid.presentation.filtered_store.data.StoreCategory
 import kotlinx.serialization.Serializable
 
 @Serializable

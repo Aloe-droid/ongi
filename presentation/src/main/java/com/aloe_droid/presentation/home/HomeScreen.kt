@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.aloe_droid.presentation.base.component.OnGiRefreshBox
 import com.aloe_droid.presentation.base.theme.LargePadding
 import com.aloe_droid.presentation.home.component.BannerPager
 import com.aloe_droid.presentation.home.component.CategoryGrid
@@ -38,7 +38,7 @@ fun HomeScreen(
     selectFavoriteStoreList: () -> Unit,
     selectNearbyStoreList: () -> Unit
 ) {
-    PullToRefreshBox(
+    OnGiRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         modifier = modifier,

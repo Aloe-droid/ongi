@@ -12,7 +12,6 @@ import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.filtered_store.filteredStoreScreen
-import com.aloe_droid.presentation.home.data.LocationData
 import com.aloe_droid.presentation.home.homeScreen
 import com.aloe_droid.presentation.map.contract.route.mapScreen
 import com.aloe_droid.presentation.search.contract.route.searchScreen
@@ -35,7 +34,7 @@ fun OnGiNavHost(
     ) {
         homeScreen(
             showSnackMessage = showSnackMessage,
-            navigateToFilteredStore = { filter: StoreFilter, location: LocationData ->
+            navigateToFilteredStore = { filter: StoreFilter ->
                 navController.safeMove {
                     val filteredStore = FilteredStore(storeFilter = filter)
                     navigate(route = filteredStore)

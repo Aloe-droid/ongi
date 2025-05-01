@@ -13,8 +13,8 @@ import com.aloe_droid.presentation.home.data.BannerData.Companion.toBannerDataLi
 import com.aloe_droid.presentation.home.data.LocationData.Companion.toLocationData
 import com.aloe_droid.presentation.home.data.StoreData
 import com.aloe_droid.presentation.home.data.StoreData.Companion.toStoreData
-import com.aloe_droid.presentation.store.data.StoreFilter
-import com.aloe_droid.presentation.store.data.StoreSortType
+import com.aloe_droid.presentation.filtered_store.data.StoreFilter
+import com.aloe_droid.presentation.filtered_store.data.StoreSortType
 import com.google.android.gms.common.api.ResolvableApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
