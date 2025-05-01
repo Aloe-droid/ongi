@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="loading">데이터를 불러오고 있어요</string>
+    <string name="select">적용</string>
+    <string name="no_store">아쉽지만 근처에 착한가격업소가 없어요 😢</string>
 
     <string name="favorite">즐겨 찾기</string>
     <string name="favorite_stores">많이 즐겨 찾은 착한 가격 업소</string>
@@ -18,6 +20,13 @@
     <string name="category_hotel">숙박</string>
     <string name="category_hair">미용</string>
     <string name="category_etc">기타</string>
+    <string name="none">전체</string>
+
+    <string name="sort_by_name">가나다순</string>
+    <string name="sort_by_favorite">즐겨찾기순</string>
+    <string name="sort_by_distance">거리순</string>
+    <string name="select_range">거리 선택: </string>
+    <string name="max_range">거리 제한 없음</string>
 
     <string name="deny_location">위치 권한을 거부하셨습니다.\n기본 위치는 서울 중심입니다.</string>
     <string name="deny_gps">GPS가 꺼져 있습니다.\n기본 위치는 서울 중심입니다.</string>
