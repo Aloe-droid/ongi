@@ -16,12 +16,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.PositionalThreshold
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.pullToRefreshIndicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -35,21 +37,29 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnGiRefreshBox(
     modifier: Modifier = Modifier,
+    scope: CoroutineScope = rememberCoroutineScope(),
     state: PullToRefreshState = rememberPullToRefreshState(),
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
+
     PullToRefreshBox(
         modifier = modifier,
         isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
+        onRefresh = {
+            onRefresh()
+            scope.launch { state.animateToHidden() }
+        },
         state = state,
         content = content,
         indicator = {
@@ -80,12 +90,14 @@ fun CustomPulsingIndicator(
     primaryColor: Color = MaterialTheme.colorScheme.primary,
     secondaryColor: Color = MaterialTheme.colorScheme.secondary,
     strokeWidth: Float = StrokeWidth.value,
+    threshold: Dp = PositionalThreshold,
 ) {
     Box(
         modifier = modifier.pullToRefreshIndicator(
             state = state,
             isRefreshing = isRefreshing,
             containerColor = containerColor,
+            threshold = threshold
         ),
         contentAlignment = Alignment.Center
     ) {
