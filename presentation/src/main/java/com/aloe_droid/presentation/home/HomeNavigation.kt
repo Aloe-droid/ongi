@@ -28,11 +28,13 @@ import com.aloe_droid.presentation.home.data.CategoryData
 import com.aloe_droid.presentation.home.data.StoreData
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
+import java.util.UUID
 
 @OptIn(ExperimentalPermissionsApi::class)
 fun NavGraphBuilder.homeScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToFilteredStore: (StoreFilter) -> Unit,
+    navigateToStore: (UUID) -> Unit
 ) = composable<Home> {
 
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -54,7 +56,7 @@ fun NavGraphBuilder.homeScreen(
             }
 
             is HomeEffect.NavigateStore -> {
-                showSnackMessage(BaseSnackBarVisuals("넘어갑니다. ${sideEffect.id}"))
+                navigateToStore(sideEffect.id)
             }
 
             is HomeEffect.NavigateStoreList -> {
