@@ -43,6 +43,9 @@ android {
 dependencies {
     implementation(project(":domain"))
 
+    // Icon
+    implementation(libs.androidx.material.icons.extended)
+
     // Paging
     implementation(libs.androidx.paging.compose)
 

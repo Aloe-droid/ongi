@@ -4,3 +4,5 @@ import androidx.compose.ui.graphics.Color
 
 val SelectedDotColor: Color = Color.Black
 val UnSelectedDotColor: Color = Color.LightGray
+
+val StarColor: Color = Color.Yellow

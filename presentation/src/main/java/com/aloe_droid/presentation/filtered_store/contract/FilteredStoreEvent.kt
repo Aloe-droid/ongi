@@ -12,5 +12,5 @@ sealed class FilteredStoreEvent : UiContract.Event {
     data object ShowDistanceBottomSheet : FilteredStoreEvent()
     data object CloseBottomSheet : FilteredStoreEvent()
     data class SelectStoreSortType(val sortType: StoreSortType) : FilteredStoreEvent()
-    data class SelectDistanceRange(val distanceRange: StoreDistanceRange): FilteredStoreEvent()
+    data class SelectDistanceRange(val distanceRange: StoreDistanceRange) : FilteredStoreEvent()
 }

@@ -16,6 +16,8 @@ import com.aloe_droid.presentation.home.homeScreen
 import com.aloe_droid.presentation.map.contract.route.mapScreen
 import com.aloe_droid.presentation.search.contract.route.searchScreen
 import com.aloe_droid.presentation.setting.contract.route.settingScreen
+import com.aloe_droid.presentation.store.contract.Store
+import com.aloe_droid.presentation.store.storeScreen
 import java.util.UUID
 
 @Composable
@@ -39,6 +41,12 @@ fun OnGiNavHost(
                     val filteredStore = FilteredStore(storeFilter = filter)
                     navigate(route = filteredStore)
                 }
+            },
+            navigateToStore = { id: UUID ->
+                navController.safeMove {
+                    val store = Store(id = id.toString())
+                    navigate(route = store)
+                }
             }
         )
 
@@ -52,9 +60,16 @@ fun OnGiNavHost(
             showSnackMessage = showSnackMessage,
             navigateToStore = { id: UUID ->
                 navController.safeMove {
-
+                    val store = Store(id = id.toString())
+                    navigate(route = store)
                 }
             }
         )
+
+        storeScreen(showSnackMessage = showSnackMessage) {
+            navController.safeMove {
+                navigateUp()
+            }
+        }
     }
 }

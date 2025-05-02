@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -27,6 +28,20 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun deleteUser(user: User): Flow<Boolean> = userDataSource
         .deleteUser(idDTO = IdDTO(user.id))
+        .flowOn(ioDispatcher)
+
+    override fun getStoreLike(
+        userId: UUID,
+        storeId: UUID
+    ): Flow<Boolean> = userDataSource.getStoreLike(userId = userId, storeId = storeId)
+        .map { it.like }
+        .flowOn(ioDispatcher)
+
+    override fun toggleStoreLike(
+        userId: UUID,
+        storeId: UUID
+    ): Flow<Boolean> = userDataSource.toggleStoreLike(userId = userId, storeId = storeId)
+        .map { it.like }
         .flowOn(ioDispatcher)
 
 }

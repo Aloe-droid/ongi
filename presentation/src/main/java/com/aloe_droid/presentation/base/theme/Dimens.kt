@@ -10,12 +10,19 @@ val ZeroDp: Dp = 0.dp
 val SmallTextSize: TextUnit = 12.sp
 val DefaultTextSize: TextUnit = 16.sp
 val LargeTextSize: TextUnit = 20.sp
+val LLargeTextSize: TextUnit = 24.sp
+val TitleTextSize: TextUnit = 32.sp
+val TitleTextHeight: TextUnit = TitleTextSize * 1.2f
 
 val SmallPadding: Dp = 4.dp
 val DefaultPadding: Dp = 8.dp
+val SemiLargePadding: Dp = 16.dp
 val LargePadding: Dp = 20.dp
 
 val MinIconSize: Dp = 24.dp
+val DefaultIconSize: Dp = 32.dp
+val LargeIconSize: Dp = 40.dp
+val ExtraLargeIconSize: Dp = 48.dp
 
 val DefaultImageSize: Dp = 40.dp
 val DefaultLogoImageSize: Dp = 260.dp
