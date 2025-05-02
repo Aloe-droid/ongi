@@ -9,7 +9,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.aloe_droid.data.datasource.dto.user.UserDTO
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
 
@@ -28,12 +29,16 @@ class UserDatastoreImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUser(): UserDTO? = with(context.datastore.data.first()) {
+    override fun getUser(): Flow<UserDTO?> = context.datastore.data.map { preference ->
         val idKey: Preferences.Key<String> = stringPreferencesKey(USER_ID)
         val addressKey: Preferences.Key<String> = stringPreferencesKey(USER_ADDRESS)
-        val id: String = this[idKey] ?: return null
-        val address: String = this[addressKey] ?: return null
-        UserDTO(id = UUID.fromString(id), address = address)
+        val id = preference[idKey]
+        val address = preference[addressKey]
+        if (id != null && address != null) {
+            UserDTO(id = UUID.fromString(id), address = address)
+        } else {
+            null
+        }
     }
 
     override suspend fun clearUser() {
