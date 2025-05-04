@@ -23,6 +23,7 @@ import com.aloe_droid.presentation.home.data.StoreData.Companion.toStoreData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -36,19 +37,20 @@ class FilteredStoreViewModel @Inject constructor(
 ) : BaseViewModel<FilteredStoreUiState, FilteredStoreEvent, FilteredStoreEffect>(savedStateHandle) {
 
     val pagingDataFlow: Flow<PagingData<StoreData>> by lazy {
-        uiState.map { filteredStoreUiState: FilteredStoreUiState ->
-            filteredStoreUiState.toStoreQuery()
-        }.flatMapLatest { storeQuery: StoreQuery ->
-            getFilteredStoreUseCase.invoke(storeQuery = storeQuery)
-        }.map { pagingData: PagingData<Store> ->
-            pagingData.map { store: Store ->
-                store.toStoreData()
-            }
-        }.onEach {
-            updateState { uiState: FilteredStoreUiState ->
-                uiState.copy(isRefresh = false)
-            }
-        }.cachedIn(viewModelScope)
+        uiState.distinctUntilChangedBy { it.locationData to it.storeFilter }
+            .map { filteredStoreUiState: FilteredStoreUiState ->
+                filteredStoreUiState.toStoreQuery()
+            }.flatMapLatest { storeQuery: StoreQuery ->
+                getFilteredStoreUseCase.invoke(storeQuery = storeQuery)
+            }.map { pagingData: PagingData<Store> ->
+                pagingData.map { store: Store ->
+                    store.toStoreData()
+                }
+            }.onEach {
+                updateState { uiState: FilteredStoreUiState ->
+                    uiState.copy(isRefresh = false)
+                }
+            }.cachedIn(viewModelScope)
     }
 
     override fun initState(savedStateHandle: SavedStateHandle): FilteredStoreUiState {
@@ -112,6 +114,9 @@ class FilteredStoreViewModel @Inject constructor(
                 storeFilter = storeFilter
             )
         }
+
+        val effect = FilteredStoreEffect.ScrollToFirstPosition
+        sendSideEffect(uiEffect = effect)
     }
 
     private fun handleSelectStoreDistanceRange(distanceRange: StoreDistanceRange) {
@@ -123,6 +128,9 @@ class FilteredStoreViewModel @Inject constructor(
                 storeFilter = storeFilter
             )
         }
+
+        val effect = FilteredStoreEffect.ScrollToFirstPosition
+        sendSideEffect(uiEffect = effect)
     }
 
     private fun FilteredStoreUiState.toStoreQuery(): StoreQuery {
