@@ -113,9 +113,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun handleNeedPermission(throwable: Throwable) {
-        throwable.message?.let { message: String ->
-            showErrorMessage(message = message)
-        }
+        Timber.e(throwable)
 
         updateState { state: HomeUiState ->
             state.copy(isNeedPermission = true, isRefreshing = false)
