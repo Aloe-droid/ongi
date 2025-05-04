@@ -31,6 +31,7 @@ navigationCompose = "2.8.9"
 paging = "3.3.6"
 playServicesLocation = "21.3.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+roomPaging = "2.7.1"
 timber = "5.0.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
@@ -51,6 +52,8 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomPaging" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomPaging" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
