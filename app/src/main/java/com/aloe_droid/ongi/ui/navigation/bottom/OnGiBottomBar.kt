@@ -12,10 +12,12 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.toRoute
 import com.aloe_droid.ongi.ui.theme.SelectColor
 import com.aloe_droid.ongi.ui.theme.UnSelectColor
 import com.aloe_droid.presentation.base.theme.ZeroDp
 import com.aloe_droid.presentation.base.view.UiContract.Route
+import com.aloe_droid.presentation.search.contract.Search
 import kotlin.reflect.KClass
 
 @Composable
@@ -24,7 +26,7 @@ fun OnGiBottomBar(
     backStackEntry: NavBackStackEntry?,
     selectRoute: (Route) -> Unit
 ) {
-    if (backStackEntry.isNowBottomRoute()) {
+    if (backStackEntry.isBottomSearch() || backStackEntry.isNowBottomRoute()) {
         BottomBar(
             bottomRouteList = bottomRouteList,
             backStackEntry = backStackEntry,
@@ -67,6 +69,15 @@ private fun BottomBar(
     }
 }
 
+private fun NavBackStackEntry?.isBottomSearch(): Boolean {
+    if (this == null) return false
+    val search: Search? = runCatching {
+        toRoute<Search>()
+    }.getOrNull()
+
+    return !(search == null || !search.isFromBottomNavigate)
+}
+
 private fun NavBackStackEntry?.isNowBottomRoute(): Boolean =
     this?.destination?.containsBottomRoute() == true
 
@@ -76,7 +87,7 @@ private fun NavDestination.containsBottomRoute(): Boolean {
 }
 
 private fun NavDestination.containsRoute(targets: List<KClass<*>>): Boolean {
-    return targets.any { target: KClass<*> ->
+    return targets.filterNot { it == Search::class }.any { target: KClass<*> ->
         hasRoute(target)
     }
 }

@@ -1,6 +1,9 @@
 package com.aloe_droid.domain.entity
 
+import java.util.UUID
+
 data class StoreQuery(
+    val id: String = UUID.randomUUID().toString(),
     val location: Location,
     val category: StoreQueryCategory = StoreQueryCategory.NONE,
     val sortType: StoreQuerySortType = StoreQuerySortType.FAVORITE,

@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -28,7 +28,9 @@ import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.OnGiRefreshBox
 import com.aloe_droid.presentation.base.component.StoreInfo
 import com.aloe_droid.presentation.base.theme.DefaultPadding
+import com.aloe_droid.presentation.base.theme.ExtraLargeImageSize
 import com.aloe_droid.presentation.base.theme.LargePadding
+import com.aloe_droid.presentation.base.theme.SemiLargePadding
 import com.aloe_droid.presentation.base.theme.toDistanceString
 import com.aloe_droid.presentation.filtered_store.component.FilterBottomSheet
 import com.aloe_droid.presentation.filtered_store.component.FilterRow
@@ -45,6 +47,7 @@ fun FilteredStoreScreen(
     isRefresh: Boolean,
     isShowOrderBottomSheet: Boolean,
     isShowDistanceBottomSheet: Boolean,
+    lazyListState: LazyListState,
     selectedSortType: StoreSortType,
     selectedDistanceRange: StoreDistanceRange,
     storeItems: LazyPagingItems<StoreData>,
@@ -73,8 +76,9 @@ fun FilteredStoreScreen(
             )
 
             if (!storeItems.loadState.isIdle || storeItems.itemCount != 0) {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(storeItems.itemSnapshotList.items, key = { it.id }) { data ->
+                LazyColumn(modifier = Modifier.fillMaxSize(), state = lazyListState) {
+                    items(storeItems.itemCount) { index ->
+                        val data: StoreData = storeItems[index] ?: return@items
                         StoreInfo(
                             modifier = Modifier.fillMaxWidth(),
                             imageUrl = data.imageUrl ?: "",
@@ -97,11 +101,11 @@ fun FilteredStoreScreen(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Image(
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier.size(ExtraLargeImageSize),
                         painter = painterResource(id = R.drawable.no_store),
                         contentDescription = null
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(SemiLargePadding))
                     Text(
                         text = stringResource(id = R.string.no_store),
                         style = MaterialTheme.typography.titleMedium,
@@ -147,6 +151,7 @@ fun FilteredStoreScreenPreview() {
         storeItems = fakeFlow,
         selectedSortType = StoreSortType.DISTANCE,
         selectedDistanceRange = StoreDistanceRange.K_10,
+        lazyListState = rememberLazyListState(),
         selectStore = {},
         onRefresh = {},
         setShowOrderBottomSheet = {},

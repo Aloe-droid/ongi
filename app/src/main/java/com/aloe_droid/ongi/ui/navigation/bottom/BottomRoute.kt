@@ -6,7 +6,7 @@ import com.aloe_droid.ongi.R
 import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.map.contract.route.Map
-import com.aloe_droid.presentation.search.contract.route.Search
+import com.aloe_droid.presentation.search.contract.Search
 import com.aloe_droid.presentation.setting.contract.route.Setting
 
 @Stable
@@ -26,7 +26,7 @@ data class BottomRoute(
 
         private val SearchRoute = BottomRoute(
             name = "검색",
-            route = Search,
+            route = Search(isFromBottomNavigate = true),
             selectedIconRes = R.drawable.search_fill_24px,
             unSelectedIconRes = R.drawable.search_24px
         )

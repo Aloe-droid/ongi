@@ -10,11 +10,12 @@ import androidx.navigation.compose.NavHost
 import com.aloe_droid.ongi.ui.navigation.NavUtil.Companion.safeMove
 import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
+import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.filtered_store.filteredStoreScreen
 import com.aloe_droid.presentation.home.homeScreen
 import com.aloe_droid.presentation.map.contract.route.mapScreen
-import com.aloe_droid.presentation.search.contract.route.searchScreen
+import com.aloe_droid.presentation.search.searchScreen
 import com.aloe_droid.presentation.setting.contract.route.settingScreen
 import com.aloe_droid.presentation.store.contract.Store
 import com.aloe_droid.presentation.store.storeScreen
@@ -50,7 +51,31 @@ fun OnGiNavHost(
             }
         )
 
-        searchScreen()
+        searchScreen(
+            showSnackMessage = showSnackMessage,
+            navigateUp = {
+                navController.safeMove {
+                    navigateUp()
+                }
+            },
+            navigateToStore = { id: UUID ->
+                navController.safeMove {
+                    val store = Store(id = id.toString())
+                    navigate(route = store)
+                }
+            },
+            navigateToFilteredStore = { query: String ->
+                navController.safeMove {
+                    val storeFilter = StoreFilter(
+                        searchQuery = query,
+                        distanceRange = StoreDistanceRange.NONE
+                    )
+
+                    val filteredStore = FilteredStore(storeFilter = storeFilter)
+                    navigate(route = filteredStore)
+                }
+            }
+        )
 
         mapScreen()
 

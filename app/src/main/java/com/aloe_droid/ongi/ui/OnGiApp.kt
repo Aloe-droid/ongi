@@ -23,6 +23,7 @@ import com.aloe_droid.ongi.ui.navigation.bottom.BottomRoute
 import com.aloe_droid.ongi.ui.navigation.bottom.OnGiBottomBar
 import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.home.contract.Home
+import com.aloe_droid.presentation.search.contract.Search
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,7 +41,11 @@ fun OnGiApp(navController: NavHostController = rememberNavController()) {
                 OnGiTopBar(
                     backStackEntry = it,
                     navigateUp = { navController.safeMove { navigateUp() } },
-                    navigateToSearch = {  }
+                    navigateToSearch = {
+                        navController.safeMove {
+                            navigate(Search())
+                        }
+                    }
                 )
             }
         },

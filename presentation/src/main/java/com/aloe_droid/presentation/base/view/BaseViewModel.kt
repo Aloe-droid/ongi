@@ -81,5 +81,8 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
     companion object {
         private const val MAX_RETRY: Int = 2
         private const val RETRY_INTERVAL: Long = 1_000L
+
+        protected const val DEFAULT_DEBOUNCE: Long = 300L
+        protected const val TIME_OUT: Long = 5_000L
     }
 }

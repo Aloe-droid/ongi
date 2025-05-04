@@ -13,9 +13,11 @@ interface StoreRepository {
 
     fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>>
 
-    fun getStore(id: UUID, latitude: Double, longitude: Double) : Flow<Store>
+    fun getStore(id: UUID, latitude: Double, longitude: Double): Flow<Store>
 
     fun getStoreDetail(id: UUID): Flow<StoreDetail>
 
     fun getStoreMenus(id: UUID): Flow<List<Menu>>
+
+    suspend fun updateStoreFavoriteCount(id: UUID, isLike: Boolean)
 }

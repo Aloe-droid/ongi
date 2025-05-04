@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import com.aloe_droid.presentation.base.theme.DefaultPadding
 import com.aloe_droid.presentation.base.theme.ExtraLargeIconSize
 import com.aloe_droid.presentation.base.theme.SmallPadding
@@ -28,6 +29,7 @@ fun AllowIcon(
     modifier: Modifier = Modifier,
     imageVector: ImageVector,
     text: String,
+    fontSize: TextUnit = TextUnit.Unspecified,
     isAllow: Boolean,
 ) {
     val color = if (isAllow) MaterialTheme.colorScheme.secondary else Color.LightGray
@@ -47,7 +49,7 @@ fun AllowIcon(
         }
 
         Spacer(modifier = Modifier.height(height = SmallPadding))
-        Text(text = text)
+        Text(text = text, fontSize = fontSize)
         Spacer(modifier = Modifier.height(height = DefaultPadding))
     }
 }

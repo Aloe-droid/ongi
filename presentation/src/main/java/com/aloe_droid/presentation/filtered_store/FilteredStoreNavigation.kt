@@ -1,5 +1,6 @@
 package com.aloe_droid.presentation.filtered_store
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -32,6 +33,7 @@ fun NavGraphBuilder.filteredStoreScreen(
     val viewModel: FilteredStoreViewModel = hiltViewModel()
     val uiState: FilteredStoreUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val storeItems: LazyPagingItems<StoreData> = viewModel.pagingDataFlow.collectAsLazyPagingItems()
+    val lazyListState = rememberLazyListState()
 
     CollectSideEffects(effectFlow = viewModel.uiEffect) { sideEffect: FilteredStoreEffect ->
         when (sideEffect) {
@@ -43,6 +45,11 @@ fun NavGraphBuilder.filteredStoreScreen(
             is FilteredStoreEffect.NavigateStore -> {
                 navigateToStore(sideEffect.id)
             }
+
+            FilteredStoreEffect.ScrollToFirstPosition -> {
+                lazyListState.animateScrollToItem(0)
+            }
+
         }
     }
 
@@ -56,6 +63,7 @@ fun NavGraphBuilder.filteredStoreScreen(
             selectedDistanceRange = uiState.storeFilter.distanceRange,
             isShowOrderBottomSheet = uiState.isShowOrderBottomSheet,
             isShowDistanceBottomSheet = uiState.isShowDistanceBottomSheet,
+            lazyListState = lazyListState,
             selectStore = { storeData: StoreData ->
                 val event = FilteredStoreEvent.SelectStore(storeData = storeData)
                 viewModel.sendEvent(event = event)
@@ -63,6 +71,7 @@ fun NavGraphBuilder.filteredStoreScreen(
             onRefresh = {
                 val event = FilteredStoreEvent.RefreshEvent
                 viewModel.sendEvent(event = event)
+                storeItems.refresh()
             },
             setShowOrderBottomSheet = {
                 val event = FilteredStoreEvent.ShowOrderBottomSheet

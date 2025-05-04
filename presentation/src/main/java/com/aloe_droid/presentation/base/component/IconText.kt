@@ -2,6 +2,7 @@ package com.aloe_droid.presentation.base.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.theme.DefaultPadding
@@ -45,6 +47,37 @@ fun IconText(
         Text(text = text, modifier = Modifier.padding(start = DefaultPadding))
     }
 }
+
+@Composable
+fun IconText(
+    modifier: Modifier = Modifier,
+    text: String,
+    leadingIcon: @Composable RowScope.() -> Unit,
+    trailingIcon: @Composable RowScope.() -> Unit,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = DefaultPadding),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        leadingIcon()
+
+        Text(
+            text = text,
+            modifier = Modifier
+                .padding(DefaultPadding)
+                .weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        trailingIcon()
+    }
+}
+
 
 @Composable
 @Preview

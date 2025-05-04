@@ -22,4 +22,12 @@ class GetFilteredStoreUseCase @Inject constructor(
         .getLocalLocation()
         .map { location: Location -> storeQuery.copy(location = location) }
         .flatMapLatest { storeRepository.getStoreStream(it) }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(searchQuery: String): Flow<PagingData<Store>> = locationRepository
+        .getLocalLocation()
+        .map { location: Location -> StoreQuery(location = location, searchQuery = searchQuery) }
+        .flatMapLatest { storeRepository.getStoreStream(it) }
+
 }
