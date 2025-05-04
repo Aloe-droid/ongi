@@ -3,12 +3,15 @@
     <string name="loading">데이터를 불러오고 있어요</string>
     <string name="select">적용</string>
     <string name="no_store">아쉽지만 근처에 착한가격업소가 없어요 😢</string>
+    <string name="no_search_result">앗, 그런 이름의 착한가격업소는 아직 없어요 😢</string>
     <string name="cant_find_store">가게를 찾을 수 없습니다.\n잠시 후에 다시 시도해 주세요.</string>
+    <string name="search_plz">검색어를 입력해주세요</string>
 
     <string name="favorite">즐겨 찾기</string>
     <string name="favorite_stores">많이 즐겨 찾은 착한 가격 업소</string>
     <string name="nearby_stores">주변 착한 가격 업소</string>
-
+    <string name="recent_search">최근 검색어</string>
+    <string name="delete_all">전체 삭제</string>
 
     <string name="category_korean">한식</string>
     <string name="category_western">양식</string>
