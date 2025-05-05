@@ -5,6 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -21,6 +25,29 @@ fun Long.toTimeStamp(): String {
     val date = Date(this)
     val formatter = SimpleDateFormat("MM.dd", Locale.getDefault())
     return formatter.format(date)
+}
+
+fun String.toWon(): String {
+    val regex = Regex("\\d+")
+    val price: String = regex.replace(this) { matchResult ->
+        val number = matchResult.value.toLongOrNull() ?: matchResult.value
+        "%,d".format(number)
+    }
+
+    val currencySuffix = if (Locale.getDefault().language == "ko") "원" else "won"
+    return "${price}${currencySuffix}"
+}
+
+fun Long.toCount(): String {
+    val formatted = "%,d".format(this)
+    val suffix = if (Locale.getDefault().language == "ko") "개" else "items"
+    return "$formatted$suffix"
+}
+
+fun Instant.toTime(): String {
+    val localTimeZone: TimeZone = TimeZone.currentSystemDefault()
+    val localTime: LocalDateTime = toLocalDateTime(localTimeZone)
+    return "${localTime.date}"
 }
 
 @Composable
