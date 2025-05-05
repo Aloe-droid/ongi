@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Instant
 import java.util.UUID
 import javax.inject.Inject
 
@@ -39,10 +40,10 @@ class StoreRepositoryImpl @Inject constructor(
     @Dispatcher(DispatcherType.IO) private val ioDispatcher: CoroutineDispatcher
 ) : StoreRepository {
 
-    override fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>> = storeDataSource
-        .getStoreList(storeQuery)
-        .map { storePage: StorePage -> storePage.stores.toStoreList() }
-        .flowOn(ioDispatcher)
+    override fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>> =
+        storeDataSource.getStoreList(storeQuery)
+            .map { storePage: StorePage -> storePage.stores.toStoreList() }
+            .flowOn(ioDispatcher)
 
     @OptIn(ExperimentalPagingApi::class)
     override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> {
@@ -84,4 +85,8 @@ class StoreRepositoryImpl @Inject constructor(
 
         storeDao.updateStore(storeEntity = updatedStoreEntity)
     }
+
+    override fun getStoreCount(): Flow<Long> = storeDataSource.getStoreCount()
+
+    override fun getStoreSyncTime(): Flow<Instant> = storeDataSource.getStoreSyncTime()
 }
