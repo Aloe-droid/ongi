@@ -24,6 +24,7 @@ import com.aloe_droid.presentation.base.theme.DefaultPadding
 import com.aloe_droid.presentation.base.theme.LLargeTextSize
 import com.aloe_droid.presentation.base.theme.SemiLargePadding
 import com.aloe_droid.presentation.base.theme.SmallPadding
+import com.aloe_droid.presentation.base.theme.toWon
 import com.aloe_droid.presentation.store.data.MenuData
 import com.aloe_droid.presentation.store.data.StoreData
 
@@ -61,7 +62,7 @@ private fun MenuInfo(modifier: Modifier = Modifier, menuData: MenuData) {
                 .padding(horizontal = DefaultPadding)
         )
 
-        Text("${menuData.price}원")
+        Text(text = menuData.price.toWon())
     }
 }
 
