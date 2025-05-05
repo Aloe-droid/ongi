@@ -47,6 +47,7 @@ fun FilteredStoreScreen(
     isRefresh: Boolean,
     isShowOrderBottomSheet: Boolean,
     isShowDistanceBottomSheet: Boolean,
+    isOnlyFavorites: Boolean,
     lazyListState: LazyListState,
     selectedSortType: StoreSortType,
     selectedDistanceRange: StoreDistanceRange,
@@ -107,7 +108,7 @@ fun FilteredStoreScreen(
                     )
                     Spacer(modifier = Modifier.height(SemiLargePadding))
                     Text(
-                        text = stringResource(id = R.string.no_store),
+                        text = stringResource(id = if (isOnlyFavorites) R.string.no_favorite_store else R.string.no_store),
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
@@ -148,6 +149,7 @@ fun FilteredStoreScreenPreview() {
         isRefresh = false,
         isShowOrderBottomSheet = false,
         isShowDistanceBottomSheet = false,
+        isOnlyFavorites = false,
         storeItems = fakeFlow,
         selectedSortType = StoreSortType.DISTANCE,
         selectedDistanceRange = StoreDistanceRange.K_10,

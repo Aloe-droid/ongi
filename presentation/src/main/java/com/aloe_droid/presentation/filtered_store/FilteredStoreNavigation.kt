@@ -61,9 +61,10 @@ fun NavGraphBuilder.filteredStoreScreen(
             isRefresh = uiState.isRefresh,
             selectedSortType = uiState.storeFilter.sortType,
             selectedDistanceRange = uiState.storeFilter.distanceRange,
+            lazyListState = lazyListState,
+            isOnlyFavorites = uiState.storeFilter.onlyFavorites,
             isShowOrderBottomSheet = uiState.isShowOrderBottomSheet,
             isShowDistanceBottomSheet = uiState.isShowDistanceBottomSheet,
-            lazyListState = lazyListState,
             selectStore = { storeData: StoreData ->
                 val event = FilteredStoreEvent.SelectStore(storeData = storeData)
                 viewModel.sendEvent(event = event)

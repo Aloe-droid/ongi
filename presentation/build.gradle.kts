@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -12,11 +15,16 @@ android {
     namespace = "com.aloe_droid.presentation"
     compileSdk = 35
 
+    val properties = Properties()
+    properties.load(FileInputStream(rootProject.file("local.properties")))
+
     defaultConfig {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField("String", "EMAIL", properties.getProperty("email"))
+        buildConfigField("String", "PRIAVACY_SECURITY" , properties.getProperty("privacySecurity"))
     }
 
     buildTypes {
@@ -37,11 +45,15 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
     implementation(project(":domain"))
+
+    // Datetime
+    implementation(libs.kotlinx.datetime)
 
     // Icon
     implementation(libs.androidx.material.icons.extended)

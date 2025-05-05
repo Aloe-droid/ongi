@@ -7,7 +7,7 @@ import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.map.contract.route.Map
 import com.aloe_droid.presentation.search.contract.Search
-import com.aloe_droid.presentation.setting.contract.route.Setting
+import com.aloe_droid.presentation.setting.contract.Setting
 
 @Stable
 data class BottomRoute(

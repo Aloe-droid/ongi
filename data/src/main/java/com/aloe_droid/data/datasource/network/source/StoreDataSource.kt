@@ -6,6 +6,7 @@ import com.aloe_droid.data.datasource.dto.store.StoreDetailDTO
 import com.aloe_droid.data.datasource.dto.store.StorePage
 import com.aloe_droid.domain.entity.StoreQuery
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 import java.util.UUID
 
 interface StoreDataSource {
@@ -17,4 +18,8 @@ interface StoreDataSource {
     fun getStoreDetail(id: UUID): Flow<StoreDetailDTO>
 
     fun getStoreMenus(id: UUID): Flow<List<MenuDTO>>
+
+    fun getStoreCount(): Flow<Long>
+
+    fun getStoreSyncTime(): Flow<Instant>
 }

@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.theme.DefaultPadding
 import com.aloe_droid.presentation.base.theme.LargeIconSize
@@ -24,9 +26,11 @@ import com.aloe_droid.presentation.base.theme.LargeIconSize
 @Composable
 fun IconText(
     modifier: Modifier = Modifier,
+    shape: Shape = CircleShape,
+    textPadding: Dp = DefaultPadding,
     text: String,
     iconRes: Int,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -38,13 +42,13 @@ fun IconText(
         Icon(
             modifier = Modifier
                 .size(LargeIconSize)
-                .clip(CircleShape),
+                .clip(shape),
             painter = painterResource(id = iconRes),
             contentDescription = text,
             tint = Color.Unspecified
         )
 
-        Text(text = text, modifier = Modifier.padding(start = DefaultPadding))
+        Text(text = text, modifier = Modifier.padding(start = textPadding))
     }
 }
 

@@ -1,15 +1,54 @@
 package com.aloe_droid.presentation.setting
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.aloe_droid.presentation.base.theme.DefaultPadding
+import com.aloe_droid.presentation.base.theme.LargePadding
+import com.aloe_droid.presentation.base.theme.SemiLargePadding
+import com.aloe_droid.presentation.setting.component.SettingButtons
+import com.aloe_droid.presentation.setting.component.StoreSyncInfo
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.Instant
 
 @Composable
-fun SettingScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("여기는 설정")
+fun SettingScreen(
+    storeCount: Long,
+    syncTime: Instant,
+    onClickFavoriteStore: () -> Unit,
+    onClickPrivacyPolicy: () -> Unit,
+    onClickInQueryToDeveloper: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(SemiLargePadding)
+    ) {
+        StoreSyncInfo(
+            modifier = Modifier.padding(top = DefaultPadding, bottom = LargePadding),
+            storeCount = storeCount,
+            syncTime = syncTime
+        )
+
+        SettingButtons(
+            onClickFavoriteStore = onClickFavoriteStore,
+            onClickPrivacyPolicy = onClickPrivacyPolicy,
+            onClickInQueryToDeveloper = onClickInQueryToDeveloper
+        )
     }
+}
+
+@Composable
+@Preview
+fun SettingScreenPreview() {
+    SettingScreen(
+        storeCount = 25565,
+        syncTime = System.now(),
+        onClickFavoriteStore = {},
+        onClickPrivacyPolicy = {},
+        onClickInQueryToDeveloper = {}
+    )
 }

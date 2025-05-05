@@ -3,25 +3,30 @@ package com.aloe_droid.domain.entity
 import java.util.UUID
 
 data class StoreQuery(
+    val userId: UUID,
     val id: String = UUID.randomUUID().toString(),
     val location: Location,
     val category: StoreQueryCategory = StoreQueryCategory.NONE,
     val sortType: StoreQuerySortType = StoreQuerySortType.FAVORITE,
     val distanceRange: StoreQueryDistance = StoreQueryDistance.NONE,
     val searchQuery: String = "",
+    val onlyFavorites: Boolean = false,
     val page: Int = 0,
     val size: Int = PAGE_SIZE
 ) {
-    fun toQueryMap(): Map<String, String> {
-        val map = mutableMapOf<String, String>()
+    fun toQueryMap(): Map<String, Any> {
+        val map = mutableMapOf<String, Any>()
 
-        map[LATITUDE] = location.latitude.toString()
-        map[LONGITUDE] = location.longitude.toString()
-        map[PAGE] = page.toString()
-        map[SIZE] = size.toString()
+        map[USER_ID] = userId.toString()
+        map[LATITUDE] = location.latitude
+        map[LONGITUDE] = location.longitude
+        map[PAGE] = page
+        map[SIZE] = size
         map[SORT_TYPE] = sortType.name
-        if (category != StoreQueryCategory.NONE) map[CATEGORY] = category.name
-        if (distanceRange != StoreQueryDistance.NONE) map[DISTANCE] = distanceRange.name
+        map[ONLY_FAVORITES] = onlyFavorites
+
+        if (category != StoreQueryCategory.NONE) map[CATEGORY] = category
+        if (distanceRange != StoreQueryDistance.NONE) map[DISTANCE] = distanceRange
         if (searchQuery.isNotBlank()) map[KEYWORD] = searchQuery
         return map
     }
@@ -29,12 +34,15 @@ data class StoreQuery(
     companion object {
         private const val PAGE = "page"
         private const val SIZE = "size"
+
+        private const val USER_ID = "userId"
         private const val KEYWORD = "keyword"
         private const val CATEGORY = "category"
         private const val DISTANCE = "distanceRange"
         private const val LATITUDE = "latitude"
         private const val LONGITUDE = "longitude"
         private const val SORT_TYPE = "sortType"
+        private const val ONLY_FAVORITES = "onlyFavorites"
 
         private const val PAGE_SIZE = 20
     }

@@ -3,6 +3,7 @@
     <string name="loading">데이터를 불러오고 있어요</string>
     <string name="select">적용</string>
     <string name="no_store">아쉽지만 근처에 착한가격업소가 없어요 😢</string>
+    <string name="no_favorite_store">즐겨찾기한 착한가격업소가 없어요 😢</string>
     <string name="no_search_result">앗, 그런 이름의 착한가격업소는 아직 없어요 😢</string>
     <string name="cant_find_store">가게를 찾을 수 없습니다.\n잠시 후에 다시 시도해 주세요.</string>
     <string name="search_plz">검색어를 입력해주세요</string>
@@ -41,6 +42,12 @@
     <string name="has_wifi">무선 인터넷</string>
     <string name="has_kids_facility">반려 동물</string>
     <string name="allows_group">유아 시설</string>
+    
+    <string name="favorited_store">즐겨 찾은 가게</string>
+    <string name="privacy_policy">개인 정보 처리 방침</string>
+    <string name="inquiry">개발자에게 문의하기</string>
+    <string name="good_store">착한 가격 업소</string>
+    <string name="update">최신화</string>
 
     <string name="deny_location">위치 권한을 거부하셨습니다.\n기본 위치는 서울 중심입니다.</string>
     <string name="deny_gps">GPS가 꺼져 있습니다.\n기본 위치는 서울 중심입니다.</string>

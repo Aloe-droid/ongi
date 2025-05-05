@@ -26,11 +26,9 @@ import com.aloe_droid.presentation.home.contract.HomeEvent
 import com.aloe_droid.presentation.home.data.BannerData
 import com.aloe_droid.presentation.home.data.CategoryData
 import com.aloe_droid.presentation.home.data.StoreData
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
 import java.util.UUID
 
-@OptIn(ExperimentalPermissionsApi::class)
 fun NavGraphBuilder.homeScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToFilteredStore: (StoreFilter) -> Unit,
