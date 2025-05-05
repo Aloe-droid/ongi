@@ -8,13 +8,14 @@ import com.aloe_droid.data.datasource.network.api.StoreAPI
 import com.aloe_droid.data.datasource.network.util.ApiExt.Companion.safeApiCallToFlow
 import com.aloe_droid.domain.entity.StoreQuery
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 import java.util.UUID
 import javax.inject.Inject
 
 class StoreDataSourceImpl @Inject constructor(private val storeAPI: StoreAPI) : StoreDataSource {
 
     override fun getStoreList(storeQuery: StoreQuery): Flow<StorePage> = safeApiCallToFlow {
-        storeAPI.getStores(storeQuery.toQueryMap())
+        storeAPI.getStores(storeQuery.toQueryMap().mapValues { it.value.toString() })
     }
 
     override fun getStore(
@@ -31,5 +32,13 @@ class StoreDataSourceImpl @Inject constructor(private val storeAPI: StoreAPI) : 
 
     override fun getStoreMenus(id: UUID): Flow<List<MenuDTO>> = safeApiCallToFlow {
         storeAPI.getStoreMenus(id = id)
+    }
+
+    override fun getStoreCount(): Flow<Long> = safeApiCallToFlow {
+        storeAPI.getStoreCount()
+    }
+
+    override fun getStoreSyncTime(): Flow<Instant> = safeApiCallToFlow {
+        storeAPI.getStoreSyncTime()
     }
 }
