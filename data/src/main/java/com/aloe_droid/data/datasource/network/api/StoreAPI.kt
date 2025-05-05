@@ -4,6 +4,7 @@ import com.aloe_droid.data.datasource.dto.store.MenuDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDetailDTO
 import com.aloe_droid.data.datasource.dto.store.StorePage
+import kotlinx.datetime.Instant
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -28,4 +29,10 @@ interface StoreAPI {
 
     @GET("api/v1/stores/{storeId}/menus")
     suspend fun getStoreMenus(@Path(value = "storeId") id: UUID): Response<List<MenuDTO>>
+
+    @GET("api/v1/stores/count")
+    suspend fun getStoreCount(): Response<Long>
+
+    @GET("api/v1/time")
+    suspend fun getStoreSyncTime(): Response<Instant>
 }
