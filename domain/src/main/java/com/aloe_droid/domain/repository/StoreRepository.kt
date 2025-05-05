@@ -6,6 +6,7 @@ import com.aloe_droid.domain.entity.Store
 import com.aloe_droid.domain.entity.StoreDetail
 import com.aloe_droid.domain.entity.StoreQuery
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 import java.util.UUID
 
 interface StoreRepository {
@@ -20,4 +21,8 @@ interface StoreRepository {
     fun getStoreMenus(id: UUID): Flow<List<Menu>>
 
     suspend fun updateStoreFavoriteCount(id: UUID, isLike: Boolean)
+
+    fun getStoreCount(): Flow<Long>
+
+    fun getStoreSyncTime(): Flow<Instant>
 }
