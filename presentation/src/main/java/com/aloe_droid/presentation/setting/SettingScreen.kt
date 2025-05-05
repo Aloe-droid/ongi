@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.aloe_droid.presentation.base.theme.DefaultPadding
 import com.aloe_droid.presentation.base.theme.LargePadding
 import com.aloe_droid.presentation.base.theme.SemiLargePadding
 import com.aloe_droid.presentation.setting.component.SettingButtons
 import com.aloe_droid.presentation.setting.component.StoreSyncInfo
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 
 @Composable
@@ -37,4 +39,16 @@ fun SettingScreen(
             onClickInQueryToDeveloper = onClickInQueryToDeveloper
         )
     }
+}
+
+@Composable
+@Preview
+fun SettingScreenPreview() {
+    SettingScreen(
+        storeCount = 25565,
+        syncTime = System.now(),
+        onClickFavoriteStore = {},
+        onClickPrivacyPolicy = {},
+        onClickInQueryToDeveloper = {}
+    )
 }
