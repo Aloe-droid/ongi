@@ -7,7 +7,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.aloe_droid.domain.entity.Store
-import com.aloe_droid.domain.entity.StoreQuery
 import com.aloe_droid.domain.usecase.GetFilteredStoreUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
@@ -17,7 +16,6 @@ import com.aloe_droid.presentation.filtered_store.contract.FilteredStoreUiState
 import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilterNavTypes.StoreFilterTypeMap
 import com.aloe_droid.presentation.filtered_store.data.StoreSortType
-import com.aloe_droid.presentation.home.data.LocationData.Companion.toLocation
 import com.aloe_droid.presentation.home.data.StoreData
 import com.aloe_droid.presentation.home.data.StoreData.Companion.toStoreData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,11 +35,15 @@ class FilteredStoreViewModel @Inject constructor(
 ) : BaseViewModel<FilteredStoreUiState, FilteredStoreEvent, FilteredStoreEffect>(savedStateHandle) {
 
     val pagingDataFlow: Flow<PagingData<StoreData>> by lazy {
-        uiState.distinctUntilChangedBy { it.locationData to it.storeFilter }
-            .map { filteredStoreUiState: FilteredStoreUiState ->
-                filteredStoreUiState.toStoreQuery()
-            }.flatMapLatest { storeQuery: StoreQuery ->
-                getFilteredStoreUseCase.invoke(storeQuery = storeQuery)
+        uiState.distinctUntilChangedBy { it.storeFilter }
+            .flatMapLatest { filterState: FilteredStoreUiState ->
+                getFilteredStoreUseCase(
+                    category = filterState.storeFilter.category.toStoreQueryCategory(),
+                    sortType = filterState.storeFilter.sortType.toStoreQuerySortType(),
+                    distanceRange = filterState.storeFilter.distanceRange.toStoreQueryDistance(),
+                    searchQuery = filterState.storeFilter.searchQuery,
+                    onlyFavorites = filterState.storeFilter.onlyFavorites
+                )
             }.map { pagingData: PagingData<Store> ->
                 pagingData.map { store: Store ->
                     store.toStoreData()
@@ -131,22 +133,6 @@ class FilteredStoreViewModel @Inject constructor(
 
         val effect = FilteredStoreEffect.ScrollToFirstPosition
         sendSideEffect(uiEffect = effect)
-    }
-
-    private fun FilteredStoreUiState.toStoreQuery(): StoreQuery {
-        val location = locationData.toLocation()
-        val category = storeFilter.category.toStoreQueryCategory()
-        val sortType = storeFilter.sortType.toStoreQuerySortType()
-        val distanceRange = storeFilter.distanceRange.toStoreQueryDistance()
-        val searchQuery = storeFilter.searchQuery
-
-        return StoreQuery(
-            location = location,
-            category = category,
-            sortType = sortType,
-            distanceRange = distanceRange,
-            searchQuery = searchQuery
-        )
     }
 
     private fun showErrorMessage(message: String) {

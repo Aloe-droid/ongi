@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
+import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.theme.DefaultTopBarMaxHeight
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStoreUiState
 
@@ -30,7 +31,8 @@ fun FilteredStoreTopBar(
     val viewModel: FilteredStoreViewModel = hiltViewModel(viewModelStoreOwner = backStackEntry)
     val uiState: FilteredStoreUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val title = with(uiState.storeFilter) {
-        if (searchQuery.isNotBlank()) searchQuery
+        if(onlyFavorites) stringResource(id = R.string.favorite)
+        else if (searchQuery.isNotBlank()) searchQuery
         else stringResource(id = category.getNameRes())
     }
 
