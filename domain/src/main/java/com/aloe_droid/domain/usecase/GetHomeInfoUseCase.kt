@@ -78,4 +78,3 @@ class GetHomeInfoUseCase @Inject constructor(
         private const val HOME_STORE_SIZE: Int = 10
     }
 }
-

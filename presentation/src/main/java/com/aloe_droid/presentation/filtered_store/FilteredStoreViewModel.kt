@@ -108,6 +108,13 @@ class FilteredStoreViewModel @Inject constructor(
     }
 
     private fun handleSelectStoreSortType(sortType: StoreSortType) {
+        if (sortType == currentState.storeFilter.sortType) {
+            updateState { uiState: FilteredStoreUiState ->
+                uiState.copy(isShowOrderBottomSheet = false)
+            }
+            return
+        }
+
         updateState { uiState: FilteredStoreUiState ->
             val storeFilter = uiState.storeFilter.copy(sortType = sortType)
             uiState.copy(
@@ -122,6 +129,13 @@ class FilteredStoreViewModel @Inject constructor(
     }
 
     private fun handleSelectStoreDistanceRange(distanceRange: StoreDistanceRange) {
+        if (distanceRange == currentState.storeFilter.distanceRange) {
+            updateState { uiState: FilteredStoreUiState ->
+                uiState.copy(isShowDistanceBottomSheet = false)
+            }
+            return
+        }
+
         updateState { uiState: FilteredStoreUiState ->
             val storeFilter = uiState.storeFilter.copy(distanceRange = distanceRange)
             uiState.copy(
