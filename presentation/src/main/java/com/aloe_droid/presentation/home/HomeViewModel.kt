@@ -6,6 +6,9 @@ import com.aloe_droid.domain.entity.HomeEntity
 import com.aloe_droid.domain.exception.LocationPermissionException
 import com.aloe_droid.domain.usecase.GetHomeInfoUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
+import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
+import com.aloe_droid.presentation.filtered_store.data.StoreFilter
+import com.aloe_droid.presentation.filtered_store.data.StoreSortType
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
 import com.aloe_droid.presentation.home.contract.HomeUiState
@@ -13,8 +16,6 @@ import com.aloe_droid.presentation.home.data.BannerData.Companion.toBannerDataLi
 import com.aloe_droid.presentation.home.data.LocationData.Companion.toLocationData
 import com.aloe_droid.presentation.home.data.StoreData
 import com.aloe_droid.presentation.home.data.StoreData.Companion.toStoreData
-import com.aloe_droid.presentation.filtered_store.data.StoreFilter
-import com.aloe_droid.presentation.filtered_store.data.StoreSortType
 import com.google.android.gms.common.api.ResolvableApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
@@ -32,12 +33,23 @@ class HomeViewModel @Inject constructor(
         is HomeEvent.LoadEvent -> handleLoad()
         is HomeEvent.RefreshEvent -> handleRefresh()
         is HomeEvent.SelectBannerEvent -> handleSelectBanner(event.bannerData.url)
-        is HomeEvent.SelectCategoryEvent -> handleSelectStores { copy(category = event.categoryData.storeCategory) }
-        is HomeEvent.SelectStore -> handleSelectStore(event.storeData)
-        HomeEvent.SelectFavoriteStoreListEvent -> handleSelectStores { copy(sortType = StoreSortType.FAVORITE) }
-        HomeEvent.SelectNearbyStoreListEvent -> handleSelectStores { copy(sortType = StoreSortType.DISTANCE) }
         HomeEvent.LocationRetry -> handleRetry()
+        is HomeEvent.SelectStore -> handleSelectStore(event.storeData)
         is HomeEvent.LocationSkip -> handlePermissionSkip(event.skipMessage)
+        is HomeEvent.SelectCategoryEvent -> handleSelectStores {
+            copy(category = event.categoryData.storeCategory)
+        }
+
+        HomeEvent.SelectNearbyStoreListEvent -> handleSelectStores {
+            copy(sortType = StoreSortType.DISTANCE)
+        }
+        
+        HomeEvent.SelectFavoriteStoreListEvent -> handleSelectStores {
+            copy(
+                sortType = StoreSortType.FAVORITE,
+                distanceRange = StoreDistanceRange.NONE
+            )
+        }
     }
 
     override fun handleError(throwable: Throwable) {
