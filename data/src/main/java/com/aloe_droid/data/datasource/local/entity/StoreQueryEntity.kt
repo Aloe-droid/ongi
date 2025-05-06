@@ -2,6 +2,7 @@ package com.aloe_droid.data.datasource.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.aloe_droid.data.datasource.local.util.Location.toScale
 import com.aloe_droid.domain.entity.StoreQuery
 import com.aloe_droid.domain.entity.StoreQueryCategory
 import com.aloe_droid.domain.entity.StoreQueryDistance
@@ -11,36 +12,29 @@ import java.util.UUID
 
 @Entity(tableName = "store_queries")
 data class StoreQueryEntity(
-    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    @PrimaryKey val id: String,
     val latitude: Double,
     val longitude: Double,
     val searchQuery: String,
     val category: StoreQueryCategory,
     val sortType: StoreQuerySortType,
     val distanceRange: StoreQueryDistance,
-    val queryTime: Long,
+    val onlyFavorites: Boolean,
+    val queryTime: Long
 ) {
     companion object {
         fun StoreQuery.toStoreQueryEntity(): StoreQueryEntity {
             return StoreQueryEntity(
-                latitude = location.latitude,
-                longitude = location.longitude,
+                id = UUID.randomUUID().toString(),
+                latitude = location.latitude.toScale(),
+                longitude = location.longitude.toScale(),
                 searchQuery = searchQuery,
                 category = category,
                 sortType = sortType,
                 distanceRange = distanceRange,
+                onlyFavorites = onlyFavorites,
                 queryTime = System.currentTimeMillis()
             )
-        }
-
-        fun StoreQueryEntity.isSameQuery(query: StoreQuery): Boolean {
-            if (latitude != query.location.latitude) return false
-            if (longitude != query.location.longitude) return false
-            if (searchQuery != query.searchQuery) return false
-            if (category != query.category) return false
-            if (sortType != query.sortType) return false
-            if (distanceRange != query.distanceRange) return false
-            return true
         }
     }
 }
