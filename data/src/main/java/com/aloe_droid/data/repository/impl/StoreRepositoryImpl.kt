@@ -1,24 +1,26 @@
 package com.aloe_droid.data.repository.impl
 
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingState
 import androidx.paging.map
 import com.aloe_droid.data.common.Dispatcher
 import com.aloe_droid.data.common.DispatcherType
 import com.aloe_droid.data.datasource.dto.store.MenuDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDetailDTO
-import com.aloe_droid.data.datasource.dto.store.StorePage
 import com.aloe_droid.data.datasource.local.dao.StoreDao
+import com.aloe_droid.data.datasource.local.dao.StoreQueryDao
 import com.aloe_droid.data.datasource.local.entity.StoreEntity
 import com.aloe_droid.data.datasource.local.entity.StoreEntity.Companion.toStore
+import com.aloe_droid.data.datasource.local.entity.StoreEntity.Companion.toStoreList
 import com.aloe_droid.data.datasource.network.source.StoreDataSource
 import com.aloe_droid.data.repository.mapper.StoreMapper.toMenuList
 import com.aloe_droid.data.repository.mapper.StoreMapper.toStore
 import com.aloe_droid.data.repository.mapper.StoreMapper.toStoreDetail
-import com.aloe_droid.data.repository.mapper.StoreMapper.toStoreList
 import com.aloe_droid.data.repository.page.StoreRemoteMediator
 import com.aloe_droid.domain.entity.Menu
 import com.aloe_droid.domain.entity.Store
@@ -27,6 +29,8 @@ import com.aloe_droid.domain.entity.StoreQuery
 import com.aloe_droid.domain.repository.StoreRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -37,25 +41,43 @@ class StoreRepositoryImpl @Inject constructor(
     private val storeDataSource: StoreDataSource,
     private val storeRemoteMediatorFactory: StoreRemoteMediator.Factory,
     private val storeDao: StoreDao,
+    private val queryDao: StoreQueryDao,
     @Dispatcher(DispatcherType.IO) private val ioDispatcher: CoroutineDispatcher
 ) : StoreRepository {
 
-    override fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>> =
-        storeDataSource.getStoreList(storeQuery)
-            .map { storePage: StorePage -> storePage.stores.toStoreList() }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getStoreList(storeQuery: StoreQuery) = flow {
+        val queryId: String = queryDao.upsert(storeQuery = storeQuery).id
+        val mediator: StoreRemoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId)
+        mediator.load(
+            loadType = LoadType.REFRESH,
+            state = PagingState(
+                pages = emptyList(),
+                anchorPosition = null,
+                config = PagingConfig(pageSize = storeQuery.size),
+                leadingPlaceholderCount = 0
+            )
+        )
+
+        val flow: Flow<List<Store>> = storeDao.getTopStores(queryId, storeQuery.size)
+            .map { it.toStoreList() }
             .flowOn(ioDispatcher)
+        emitAll(flow)
+    }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> {
-        return Pager(
+    override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> = flow {
+        val queryId = queryDao.upsert(storeQuery = storeQuery).id
+        val flow: Flow<PagingData<Store>> = Pager(
             config = PagingConfig(pageSize = storeQuery.size),
-            remoteMediator = storeRemoteMediatorFactory.create(storeQuery),
-            pagingSourceFactory = { storeDao.getStores(storeQuery.id) }
+            remoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId),
+            pagingSourceFactory = { storeDao.getStoresByQueryId(queryId = queryId) }
         ).flow.map { pagingData: PagingData<StoreEntity> ->
             pagingData.map { storeEntity: StoreEntity ->
                 storeEntity.toStore()
             }
         }.flowOn(ioDispatcher)
+        emitAll(flow = flow)
     }
 
     override fun getStore(
