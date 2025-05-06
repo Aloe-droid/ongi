@@ -4,7 +4,6 @@ import java.util.UUID
 
 data class StoreQuery(
     val userId: UUID,
-    val id: String = UUID.randomUUID().toString(),
     val location: Location,
     val category: StoreQueryCategory = StoreQueryCategory.NONE,
     val sortType: StoreQuerySortType = StoreQuerySortType.FAVORITE,
