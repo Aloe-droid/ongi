@@ -31,7 +31,7 @@ class GetFilteredStoreUseCase @Inject constructor(
         onlyFavorites: Boolean
     ) = combine(
         userStoreRepository.getUser(),
-        locationRepository.getLocation()
+        locationRepository.getLocalLocation()
     ) { user: User?, location: Location ->
         if (user == null) null
         else user to location
@@ -53,7 +53,7 @@ class GetFilteredStoreUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(searchQuery: String) = combine(
         userStoreRepository.getUser(),
-        locationRepository.getLocation()
+        locationRepository.getLocalLocation()
     ) { user: User?, location: Location ->
         if (user == null) null
         else user to location
