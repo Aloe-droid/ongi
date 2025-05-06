@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.aloe_droid.data.datasource.local.dao.SearchHistoryDao
 import com.aloe_droid.data.datasource.local.dao.StoreDao
-import com.aloe_droid.data.datasource.local.dao.StoreKeyDao
+import com.aloe_droid.data.datasource.local.dao.StoreQueryCrossRefDao
+import com.aloe_droid.data.datasource.local.dao.StoreQueryDao
 import com.aloe_droid.data.datasource.local.database.OnGiDatabase
 import dagger.Module
 import dagger.Provides
@@ -31,7 +32,13 @@ object DBModule {
 
     @Singleton
     @Provides
-    fun providesStoreKeyDao(onGiDatabase: OnGiDatabase): StoreKeyDao = onGiDatabase.storeKeyDao()
+    fun providesStoreQueryDao(onGiDatabase: OnGiDatabase): StoreQueryDao =
+        onGiDatabase.storeQueryDao()
+
+    @Singleton
+    @Provides
+    fun providesStoreRefDao(onGiDatabase: OnGiDatabase): StoreQueryCrossRefDao =
+        onGiDatabase.storeRefDao()
 
     @Singleton
     @Provides
