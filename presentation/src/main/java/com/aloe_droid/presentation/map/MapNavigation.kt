@@ -7,10 +7,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
+import com.aloe_droid.presentation.base.view.ScreenTransition
 import com.aloe_droid.presentation.map.component.CollectMapSideEffects
 import com.aloe_droid.presentation.map.component.LocationHandler
 import com.aloe_droid.presentation.map.contract.Map
@@ -18,13 +20,23 @@ import com.aloe_droid.presentation.map.contract.MapEvent
 import com.aloe_droid.presentation.map.contract.MapUiState
 import com.aloe_droid.presentation.map.data.MapData
 import com.aloe_droid.presentation.map.data.StoreMapData
+import com.aloe_droid.presentation.setting.contract.Setting
 import com.naver.maps.geometry.LatLng
 import java.util.UUID
 
 fun NavGraphBuilder.mapScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToStore: (UUID) -> Unit,
-) = composable<Map> {
+) = composable<Map>(
+    enterTransition = {
+        if (initialState.destination.hasRoute<Setting>()) ScreenTransition.slideInFromLeft()
+        else ScreenTransition.slideInFromRight()
+    },
+    exitTransition = {
+        if(targetState.destination.hasRoute<Setting>()) ScreenTransition.slideOutToLeft()
+        else ScreenTransition.slideOutToRight()
+    },
+) {
     val viewModel: MapViewModel = hiltViewModel()
     val uiState: MapUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val storeListState: LazyListState = rememberLazyListState()

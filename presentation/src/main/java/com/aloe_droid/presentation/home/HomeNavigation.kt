@@ -15,6 +15,7 @@ import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.base.view.ScreenTransition
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.home.component.LocationHandler
 import com.aloe_droid.presentation.home.contract.Home
@@ -29,7 +30,12 @@ fun NavGraphBuilder.homeScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToFilteredStore: (StoreFilter) -> Unit,
     navigateToStore: (UUID) -> Unit
-) = composable<Home> {
+) = composable<Home>(
+    enterTransition = { ScreenTransition.slideInFromRight() },
+    popEnterTransition = { ScreenTransition.slideInFromLeft() },
+    exitTransition = { ScreenTransition.slideOutToLeft() },
+    popExitTransition = { ScreenTransition.slideOutToRight() }
+) {
 
     val homeViewModel: HomeViewModel = hiltViewModel()
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
