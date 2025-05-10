@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -11,6 +14,9 @@ android {
     namespace = "com.aloe_droid.ongi"
     compileSdk = 35
 
+    val properties = Properties()
+    properties.load(FileInputStream(rootProject.file("local.properties")))
+
     defaultConfig {
         applicationId = "com.aloe_droid.ongi"
         minSdk = 24
@@ -19,6 +25,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "CLIENT_ID", properties.getProperty("nClientId"))
     }
 
     buildTypes {
@@ -48,6 +55,9 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":presentation"))
 
+    // Naver Map
+    implementation(libs.map.sdk)
+
     // Log
     implementation(libs.timber)
 
@@ -64,4 +74,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material)
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }
