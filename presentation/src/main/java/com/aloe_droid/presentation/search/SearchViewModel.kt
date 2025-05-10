@@ -12,6 +12,7 @@ import com.aloe_droid.domain.usecase.GetFilteredStoreUseCase
 import com.aloe_droid.domain.usecase.GetSearchHistoryUseCase
 import com.aloe_droid.domain.usecase.InsertSearchHistoryUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
+import com.aloe_droid.presentation.search.contract.Search
 import com.aloe_droid.presentation.search.contract.SearchEffect
 import com.aloe_droid.presentation.search.contract.SearchEvent
 import com.aloe_droid.presentation.search.contract.SearchUiState
@@ -47,7 +48,8 @@ class SearchViewModel @Inject constructor(
         .filter { it.isNotBlank() }
         .distinctUntilChanged()
         .flatMapLatest { query ->
-            getFilteredStoreUseCase(searchQuery = query)
+            val route = Search::class.java.name
+            getFilteredStoreUseCase(searchQuery = query, route = route)
         }.map { pagingData: PagingData<Store> ->
             pagingData.map { store: Store ->
                 store.toSearchedStore()
@@ -73,14 +75,16 @@ class SearchViewModel @Inject constructor(
         return SearchUiState()
     }
 
-    override fun handleEvent(event: SearchEvent) = when (event) {
-        SearchEvent.LoadEvent -> handleLoad()
-        SearchEvent.NavigateUpEvent -> handleNavigateUp()
-        SearchEvent.DeleteAllQuery -> handleDeleteAllHistory()
-        is SearchEvent.ChangeQuery -> handleChangeQuery(event.query)
-        is SearchEvent.SearchQuery -> handleSearchQuery(event.query)
-        is SearchEvent.DeleteQuery -> handleDeleteHistory(event.id)
-        is SearchEvent.SelectStore -> handleSelectStore(event.id)
+    override fun handleEvent(event: SearchEvent) {
+        when (event) {
+            SearchEvent.LoadEvent -> handleLoad()
+            SearchEvent.NavigateUpEvent -> handleNavigateUp()
+            SearchEvent.DeleteAllQuery -> handleDeleteAllHistory()
+            is SearchEvent.ChangeQuery -> handleChangeQuery(event.query)
+            is SearchEvent.SearchQuery -> handleSearchQuery(event.query)
+            is SearchEvent.DeleteQuery -> handleDeleteHistory(event.id)
+            is SearchEvent.SelectStore -> handleSelectStore(event.id)
+        }
     }
 
     override fun handleError(throwable: Throwable) {
