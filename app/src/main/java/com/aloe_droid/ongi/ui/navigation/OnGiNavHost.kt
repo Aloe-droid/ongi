@@ -14,7 +14,7 @@ import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.filtered_store.filteredStoreScreen
 import com.aloe_droid.presentation.home.homeScreen
-import com.aloe_droid.presentation.map.contract.route.mapScreen
+import com.aloe_droid.presentation.map.mapScreen
 import com.aloe_droid.presentation.search.searchScreen
 import com.aloe_droid.presentation.setting.settingScreen
 import com.aloe_droid.presentation.store.contract.Store
@@ -77,7 +77,15 @@ fun OnGiNavHost(
             }
         )
 
-        mapScreen()
+        mapScreen(
+            showSnackMessage = showSnackMessage,
+            navigateToStore = { id: UUID ->
+                navController.safeMove {
+                    val store = Store(id = id.toString())
+                    navigate(route = store)
+                }
+            }
+        )
 
         settingScreen(
             showSnackMessage = showSnackMessage,
