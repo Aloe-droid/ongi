@@ -56,4 +56,6 @@ class GetStoreInfoUseCase @Inject constructor(
             }
         }
     }
+
+    fun getLocalStore(storeId: UUID): Flow<Store> = storeRepository.getLocalStore(storeId)
 }
