@@ -6,6 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import androidx.paging.map
 import com.aloe_droid.data.common.Dispatcher
 import com.aloe_droid.data.common.DispatcherType
@@ -14,6 +15,7 @@ import com.aloe_droid.data.datasource.dto.store.StoreDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDetailDTO
 import com.aloe_droid.data.datasource.local.dao.StoreDao
 import com.aloe_droid.data.datasource.local.dao.StoreQueryDao
+import com.aloe_droid.data.datasource.local.data.StoresWithQuery
 import com.aloe_droid.data.datasource.local.entity.StoreEntity
 import com.aloe_droid.data.datasource.local.entity.StoreEntity.Companion.toStore
 import com.aloe_droid.data.datasource.local.entity.StoreEntity.Companion.toStoreList
@@ -28,8 +30,11 @@ import com.aloe_droid.domain.entity.StoreDetail
 import com.aloe_droid.domain.entity.StoreQuery
 import com.aloe_droid.domain.repository.StoreRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -45,11 +50,14 @@ class StoreRepositoryImpl @Inject constructor(
     @Dispatcher(DispatcherType.IO) private val ioDispatcher: CoroutineDispatcher
 ) : StoreRepository {
 
-    @OptIn(ExperimentalPagingApi::class)
-    override fun getStoreList(storeQuery: StoreQuery) = flow {
-        val queryId: String = queryDao.upsert(storeQuery = storeQuery).id
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+    override fun getStoreList(
+        storeQuery: StoreQuery,
+        requestRoute: String
+    ): Flow<List<Store>> = flow {
+        val queryId = queryDao.upsert(storeQuery = storeQuery, requestRoute = requestRoute).id
         val mediator: StoreRemoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId)
-        mediator.load(
+        val result: RemoteMediator.MediatorResult = mediator.load(
             loadType = LoadType.REFRESH,
             state = PagingState(
                 pages = emptyList(),
@@ -58,16 +66,20 @@ class StoreRepositoryImpl @Inject constructor(
                 leadingPlaceholderCount = 0
             )
         )
-
-        val flow: Flow<List<Store>> = storeDao.getTopStores(queryId, storeQuery.size)
-            .map { it.toStoreList() }
-            .flowOn(ioDispatcher)
-        emitAll(flow)
-    }
+        if (result is RemoteMediator.MediatorResult.Error) throw result.throwable
+        emit(queryId)
+    }.flatMapLatest { queryId: String ->
+        storeDao.getTopStoresWithQueryId(queryId, storeQuery.size).filter { it.queryId == queryId }
+    }.map { storesWithQuery: StoresWithQuery ->
+        storesWithQuery.storeList.toStoreList()
+    }.flowOn(ioDispatcher)
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> = flow {
-        val queryId = queryDao.upsert(storeQuery = storeQuery).id
+    override fun getStoreStream(
+        storeQuery: StoreQuery,
+        requestRoute: String
+    ): Flow<PagingData<Store>> = flow {
+        val queryId = queryDao.upsert(storeQuery = storeQuery, requestRoute = requestRoute).id
         val flow: Flow<PagingData<Store>> = Pager(
             config = PagingConfig(pageSize = storeQuery.size),
             remoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId),
@@ -79,6 +91,10 @@ class StoreRepositoryImpl @Inject constructor(
         }.flowOn(ioDispatcher)
         emitAll(flow = flow)
     }
+
+    override fun getLocalStore(storeId: UUID): Flow<Store> = storeDao
+        .getStoreFlowById(id = storeId.toString())
+        .map { it.toStore() }
 
     override fun getStore(
         id: UUID,
