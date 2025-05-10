@@ -20,10 +20,11 @@ data class StoreQueryEntity(
     val sortType: StoreQuerySortType,
     val distanceRange: StoreQueryDistance,
     val onlyFavorites: Boolean,
+    val requestRoute: String,
     val queryTime: Long
 ) {
     companion object {
-        fun StoreQuery.toStoreQueryEntity(): StoreQueryEntity {
+        fun StoreQuery.toStoreQueryEntity(requestRoute: String): StoreQueryEntity {
             return StoreQueryEntity(
                 id = UUID.randomUUID().toString(),
                 latitude = location.latitude.toScale(),
@@ -33,6 +34,7 @@ data class StoreQueryEntity(
                 sortType = sortType,
                 distanceRange = distanceRange,
                 onlyFavorites = onlyFavorites,
+                requestRoute = requestRoute,
                 queryTime = System.currentTimeMillis()
             )
         }
