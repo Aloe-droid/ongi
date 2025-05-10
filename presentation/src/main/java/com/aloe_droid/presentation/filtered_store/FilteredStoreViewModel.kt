@@ -38,6 +38,7 @@ class FilteredStoreViewModel @Inject constructor(
         uiState.distinctUntilChangedBy { it.storeFilter }
             .flatMapLatest { filterState: FilteredStoreUiState ->
                 getFilteredStoreUseCase(
+                    route = FilteredStore::class.java.name,
                     category = filterState.storeFilter.category.toStoreQueryCategory(),
                     sortType = filterState.storeFilter.sortType.toStoreQuerySortType(),
                     distanceRange = filterState.storeFilter.distanceRange.toStoreQueryDistance(),
@@ -60,14 +61,16 @@ class FilteredStoreViewModel @Inject constructor(
         return FilteredStoreUiState(storeFilter = filteredInfo.storeFilter)
     }
 
-    override fun handleEvent(event: FilteredStoreEvent) = when (event) {
-        FilteredStoreEvent.RefreshEvent -> handleRefresh()
-        is FilteredStoreEvent.SelectStore -> handleNavigateToStore(event.storeData)
-        FilteredStoreEvent.ShowOrderBottomSheet -> handleShowOrderBottomSheet()
-        FilteredStoreEvent.ShowDistanceBottomSheet -> handleShowDistanceBottomSheet()
-        FilteredStoreEvent.CloseBottomSheet -> handleCloseBottomSheet()
-        is FilteredStoreEvent.SelectStoreSortType -> handleSelectStoreSortType(event.sortType)
-        is FilteredStoreEvent.SelectDistanceRange -> handleSelectStoreDistanceRange(event.distanceRange)
+    override fun handleEvent(event: FilteredStoreEvent) {
+        when (event) {
+            FilteredStoreEvent.RefreshEvent -> handleRefresh()
+            is FilteredStoreEvent.SelectStore -> handleNavigateToStore(event.storeData)
+            FilteredStoreEvent.ShowOrderBottomSheet -> handleShowOrderBottomSheet()
+            FilteredStoreEvent.ShowDistanceBottomSheet -> handleShowDistanceBottomSheet()
+            FilteredStoreEvent.CloseBottomSheet -> handleCloseBottomSheet()
+            is FilteredStoreEvent.SelectStoreSortType -> handleSelectStoreSortType(event.sortType)
+            is FilteredStoreEvent.SelectDistanceRange -> handleSelectStoreDistanceRange(event.distanceRange)
+        }
     }
 
     override fun handleError(throwable: Throwable) {
@@ -150,7 +153,8 @@ class FilteredStoreViewModel @Inject constructor(
     }
 
     private fun showErrorMessage(message: String) {
-        val effect: FilteredStoreEffect = FilteredStoreEffect.ShowErrorMessage(message = message)
+        val effect: FilteredStoreEffect =
+            FilteredStoreEffect.ShowErrorMessage(message = message)
         sendSideEffect(uiEffect = effect)
     }
 }

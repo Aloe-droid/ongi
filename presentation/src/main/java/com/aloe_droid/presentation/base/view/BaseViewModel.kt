@@ -3,7 +3,9 @@ package com.aloe_droid.presentation.base.view
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ChannelResult
 import kotlinx.coroutines.delay
@@ -45,12 +47,13 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
     protected fun <Result> CoroutineScope.safeLaunch(
         onSuccess: (Result) -> Unit = {},
         block: suspend () -> Result
-    ) {
-        viewModelScope.launch {
-            runCatching { block() }
-                .onSuccess { result: Result -> onSuccess(result) }
-                .onFailure { throwable: Throwable -> handleError(throwable = throwable) }
-        }
+    ): Job = viewModelScope.launch {
+        runCatching { block() }
+            .onSuccess { result: Result -> onSuccess(result) }
+            .onFailure { throwable: Throwable ->
+                if (throwable is CancellationException) Timber.e(t = throwable)
+                else handleError(throwable = throwable)
+            }
     }
 
     protected suspend fun <T> Flow<T>.safeCollect(collector: suspend (T) -> Unit) =

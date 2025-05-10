@@ -21,11 +21,13 @@ class SettingViewModel @Inject constructor(
         return SettingUiState()
     }
 
-    override fun handleEvent(event: SettingEvent) = when (event) {
-        SettingEvent.LoadEvent -> handleLoad()
-        SettingEvent.ClickFavoriteStore -> handleNavigateToFilteredStore()
-        SettingEvent.ClickPrivacyPolicy -> handleMoveToPrivacyPolicy()
-        SettingEvent.ClickInquiryToDeveloper -> handleMoveToInQueryToDeveloper()
+    override fun handleEvent(event: SettingEvent) {
+        when (event) {
+            SettingEvent.LoadEvent -> handleLoad()
+            SettingEvent.ClickFavoriteStore -> handleNavigateToFilteredStore()
+            SettingEvent.ClickPrivacyPolicy -> handleMoveToPrivacyPolicy()
+            SettingEvent.ClickInquiryToDeveloper -> handleMoveToInQueryToDeveloper()
+        }
     }
 
     override fun handleError(throwable: Throwable) {

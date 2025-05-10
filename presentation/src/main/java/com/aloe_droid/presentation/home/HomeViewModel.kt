@@ -9,6 +9,7 @@ import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.filtered_store.data.StoreSortType
+import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
 import com.aloe_droid.presentation.home.contract.HomeUiState
@@ -29,26 +30,28 @@ class HomeViewModel @Inject constructor(
 
     override fun initState(savedStateHandle: SavedStateHandle): HomeUiState = HomeUiState()
 
-    override fun handleEvent(event: HomeEvent) = when (event) {
-        is HomeEvent.LoadEvent -> handleLoad()
-        is HomeEvent.RefreshEvent -> handleRefresh()
-        is HomeEvent.SelectBannerEvent -> handleSelectBanner(event.bannerData.url)
-        HomeEvent.LocationRetry -> handleRetry()
-        is HomeEvent.SelectStore -> handleSelectStore(event.storeData)
-        is HomeEvent.LocationSkip -> handlePermissionSkip(event.skipMessage)
-        is HomeEvent.SelectCategoryEvent -> handleSelectStores {
-            copy(category = event.categoryData.storeCategory)
-        }
+    override fun handleEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.LoadEvent -> handleLoad()
+            is HomeEvent.RefreshEvent -> handleRefresh()
+            is HomeEvent.SelectBannerEvent -> handleSelectBanner(event.bannerData.url)
+            HomeEvent.LocationRetry -> handleRetry()
+            is HomeEvent.SelectStore -> handleSelectStore(event.storeData)
+            is HomeEvent.LocationSkip -> handlePermissionSkip(event.skipMessage)
+            is HomeEvent.SelectCategoryEvent -> handleSelectStores {
+                copy(category = event.categoryData.storeCategory)
+            }
 
-        HomeEvent.SelectNearbyStoreListEvent -> handleSelectStores {
-            copy(sortType = StoreSortType.DISTANCE)
-        }
-        
-        HomeEvent.SelectFavoriteStoreListEvent -> handleSelectStores {
-            copy(
-                sortType = StoreSortType.FAVORITE,
-                distanceRange = StoreDistanceRange.NONE
-            )
+            HomeEvent.SelectNearbyStoreListEvent -> handleSelectStores {
+                copy(sortType = StoreSortType.DISTANCE)
+            }
+
+            HomeEvent.SelectFavoriteStoreListEvent -> handleSelectStores {
+                copy(
+                    sortType = StoreSortType.FAVORITE,
+                    distanceRange = StoreDistanceRange.NONE
+                )
+            }
         }
     }
 
@@ -64,7 +67,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun handleLoad() = viewModelScope.safeLaunch {
-        getHomeInfoUseCase().safeCollect { homeEntity: HomeEntity ->
+        val route: String = Home::class.java.name
+        getHomeInfoUseCase(route = route).safeCollect { homeEntity: HomeEntity ->
             if (homeEntity.location.isDefault) handleLocationError(homeEntity.location.error)
 
             updateState { state: HomeUiState ->
@@ -80,6 +84,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun handleRefresh() = viewModelScope.safeLaunch {
+        val route: String = Home::class.java.name
         updateState { state: HomeUiState ->
             state.copy(
                 isRefreshing = true,
@@ -87,7 +92,7 @@ class HomeViewModel @Inject constructor(
             )
         }
 
-        getHomeInfoUseCase().safeCollect { homeEntity: HomeEntity ->
+        getHomeInfoUseCase(route = route).safeCollect { homeEntity: HomeEntity ->
             if (homeEntity.location.isDefault) handleLocationError(homeEntity.location.error)
 
             updateState { state: HomeUiState ->

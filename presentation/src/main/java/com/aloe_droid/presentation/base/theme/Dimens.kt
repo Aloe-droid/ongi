@@ -7,6 +7,8 @@ import androidx.compose.ui.unit.sp
 
 val ZeroDp: Dp = 0.dp
 
+val DefaultBorderDp: Dp = 1.dp
+
 val SmallTextSize: TextUnit = 12.sp
 val SemiSmallTextSize: TextUnit = 14.sp
 val DefaultTextSize: TextUnit = 16.sp
@@ -19,6 +21,7 @@ val SmallPadding: Dp = 4.dp
 val DefaultPadding: Dp = 8.dp
 val SemiLargePadding: Dp = 16.dp
 val LargePadding: Dp = 20.dp
+val ExtraLargePadding: Dp = 32.dp
 
 val MinIconSize: Dp = 24.dp
 val DefaultIconSize: Dp = 32.dp
@@ -26,7 +29,7 @@ val LargeIconSize: Dp = 40.dp
 val ExtraLargeIconSize: Dp = 48.dp
 
 val DefaultImageSize: Dp = 40.dp
-val ExtraLargeImageSize:Dp =200.dp
+val ExtraLargeImageSize: Dp = 200.dp
 
 val DefaultLogoImageSize: Dp = 260.dp
 
@@ -34,6 +37,7 @@ val SmallCornerRadius: Dp = 8.dp
 val DefaultCornerRadius: Dp = 15.dp
 
 val MaxGridHeight: Dp = 300.dp
+val MaxBottomSheetHeight: Dp = 300.dp
 
 val DefaultTopBarMaxHeight: Dp = 50.dp
 

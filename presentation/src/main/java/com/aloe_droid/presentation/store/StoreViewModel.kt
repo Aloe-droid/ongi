@@ -30,12 +30,14 @@ class StoreViewModel @Inject constructor(
         return StoreUiState(id = UUID.fromString(store.id))
     }
 
-    override fun handleEvent(event: StoreEvent) = when (event) {
-        StoreEvent.LoadEvent -> handleLoad()
-        is StoreEvent.CantFindStoreEvent -> handleCantFindStore(event.message)
-        StoreEvent.ToggleFavorite -> handleToggleFavorite()
-        is StoreEvent.CallEvent -> handleCall(event.phone)
-        is StoreEvent.MapEvent -> handleMap(event.address)
+    override fun handleEvent(event: StoreEvent) {
+        when (event) {
+            StoreEvent.LoadEvent -> handleLoad()
+            is StoreEvent.CantFindStoreEvent -> handleCantFindStore(event.message)
+            StoreEvent.ToggleFavorite -> handleToggleFavorite()
+            is StoreEvent.CallEvent -> handleCall(event.phone)
+            is StoreEvent.MapEvent -> handleMap(event.address)
+        }
     }
 
     private fun handleLoad() = viewModelScope.safeLaunch {

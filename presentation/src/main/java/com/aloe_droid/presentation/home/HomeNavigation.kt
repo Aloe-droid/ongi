@@ -1,7 +1,5 @@
 package com.aloe_droid.presentation.home
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.material3.SnackbarVisuals
@@ -14,19 +12,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.aloe_droid.presentation.R
-import com.aloe_droid.presentation.base.component.GpsHandler
 import com.aloe_droid.presentation.base.component.LoadingScreen
-import com.aloe_droid.presentation.base.component.PermissionHandler
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
+import com.aloe_droid.presentation.home.component.LocationHandler
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
 import com.aloe_droid.presentation.home.data.BannerData
 import com.aloe_droid.presentation.home.data.CategoryData
 import com.aloe_droid.presentation.home.data.StoreData
-import com.google.android.gms.common.api.ResolvableApiException
 import java.util.UUID
 
 fun NavGraphBuilder.homeScreen(
@@ -64,35 +60,7 @@ fun NavGraphBuilder.homeScreen(
         }
     }
 
-    if (uiState.isNeedPermission) {
-        PermissionHandler(
-            permissions = listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION),
-            onRetry = {
-                val event: HomeEvent = HomeEvent.LocationRetry
-                homeViewModel.sendEvent(event = event)
-            },
-            onSkip = {
-                val denyMessage: String = context.getString(R.string.deny_location)
-                val event: HomeEvent = HomeEvent.LocationSkip(skipMessage = denyMessage)
-                homeViewModel.sendEvent(event = event)
-            }
-        )
-    }
-
-    uiState.gpsError?.let { error: ResolvableApiException ->
-        GpsHandler(
-            gpsError = error,
-            onEnabled = {
-                val event: HomeEvent = HomeEvent.LocationRetry
-                homeViewModel.sendEvent(event = event)
-            },
-            onDisabled = {
-                val denyMessage: String = context.getString(R.string.deny_gps)
-                val event: HomeEvent = HomeEvent.LocationSkip(skipMessage = denyMessage)
-                homeViewModel.sendEvent(event = event)
-            }
-        )
-    }
+    LocationHandler(uiState = uiState, viewModel = homeViewModel)
 
     if (uiState.isInitialState) {
         homeViewModel.sendEvent(event = HomeEvent.LoadEvent)

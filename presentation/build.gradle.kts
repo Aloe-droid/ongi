@@ -24,7 +24,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("String", "EMAIL", properties.getProperty("email"))
-        buildConfigField("String", "PRIAVACY_SECURITY" , properties.getProperty("privacySecurity"))
+        buildConfigField("String", "PRIAVACY_SECURITY", properties.getProperty("privacySecurity"))
+        buildConfigField("String", "CLIENT_ID", properties.getProperty("nClientId"))
+        buildConfigField("String", "CLIENT_SECRET", properties.getProperty("nClientSecret"))
     }
 
     buildTypes {
@@ -51,6 +53,10 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+
+    // Naver Map
+    implementation (libs.naver.map.compose)
+    implementation (libs.tedclustering.naver)
 
     // Datetime
     implementation(libs.kotlinx.datetime)

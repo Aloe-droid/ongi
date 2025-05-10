@@ -10,9 +10,11 @@ import kotlinx.datetime.Instant
 import java.util.UUID
 
 interface StoreRepository {
-    fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>>
+    fun getStoreList(storeQuery: StoreQuery, requestRoute: String): Flow<List<Store>>
 
-    fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>>
+    fun getStoreStream(storeQuery: StoreQuery, requestRoute: String): Flow<PagingData<Store>>
+
+    fun getLocalStore(storeId: UUID) : Flow<Store>
 
     fun getStore(id: UUID, latitude: Double, longitude: Double): Flow<Store>
 

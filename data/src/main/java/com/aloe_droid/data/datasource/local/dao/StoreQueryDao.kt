@@ -26,6 +26,7 @@ interface StoreQueryDao {
     AND sortType = :sortType
     AND distanceRange = :distanceRange
     AND onlyFavorites = :onlyFavorites
+    AND requestRoute = :requestRoute
     LIMIT 1
 """
     )
@@ -37,20 +38,24 @@ interface StoreQueryDao {
         sortType: StoreQuerySortType,
         distanceRange: StoreQueryDistance,
         onlyFavorites: Boolean,
+        requestRoute: String,
     ): StoreQueryEntity?
 
-    suspend fun findQueryByStoreQuery(storeQuery: StoreQuery): StoreQueryEntity? =
-        with(storeQuery) {
-            return findQueryByFields(
-                latitude = location.latitude.toScale(),
-                longitude = location.longitude.toScale(),
-                searchQuery = searchQuery,
-                category = category,
-                sortType = sortType,
-                distanceRange = distanceRange,
-                onlyFavorites = onlyFavorites
-            )
-        }
+    suspend fun findQueryByStoreQuery(
+        storeQuery: StoreQuery,
+        requestRoute: String
+    ): StoreQueryEntity? = with(storeQuery) {
+        return findQueryByFields(
+            latitude = location.latitude.toScale(),
+            longitude = location.longitude.toScale(),
+            searchQuery = searchQuery,
+            category = category,
+            sortType = sortType,
+            distanceRange = distanceRange,
+            onlyFavorites = onlyFavorites,
+            requestRoute = requestRoute
+        )
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertQuery(query: StoreQueryEntity): Long
@@ -61,14 +66,18 @@ interface StoreQueryDao {
     @Query("DELETE FROM store_queries WHERE id = :id")
     suspend fun deleteQueryById(id: String)
 
-    suspend fun upsert(storeQuery: StoreQuery): StoreQueryEntity {
-        val existing: StoreQueryEntity? = findQueryByStoreQuery(storeQuery)
+    suspend fun upsert(storeQuery: StoreQuery, requestRoute: String): StoreQueryEntity {
+        val existing: StoreQueryEntity? = findQueryByStoreQuery(
+            storeQuery = storeQuery,
+            requestRoute = requestRoute
+        )
+
         return if (existing != null) {
             val entity = existing.copy(queryTime = System.currentTimeMillis())
             updateQuery(entity)
             entity
         } else {
-            val entity = storeQuery.toStoreQueryEntity()
+            val entity = storeQuery.toStoreQueryEntity(requestRoute = requestRoute)
             insertQuery(entity)
             entity
         }

@@ -21,17 +21,20 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.04.01"
 appcompat = "1.7.0"
+mapSdk = "3.21.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "2.1.20"
 ksp = "2.1.20-1.0.32"
 hilt = "2.56.2"
 materialIconsExtended = "1.7.8"
 materialVersion = "1.3.2"
+naverMapCompose = "1.8.0"
 navigationCompose = "2.8.9"
 paging = "3.3.6"
 playServicesLocation = "21.3.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 roomPaging = "2.7.1"
+tedclusteringNaver = "1.0.2"
 timber = "5.0.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
@@ -77,9 +80,12 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+map-sdk = { module = "com.naver.maps:map-sdk", version.ref = "mapSdk" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+naver-map-compose = { module = "io.github.fornewid:naver-map-compose", version.ref = "naverMapCompose" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
+tedclustering-naver = { module = "io.github.ParkSangGwon:tedclustering-naver", version.ref = "tedclusteringNaver" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

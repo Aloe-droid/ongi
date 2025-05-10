@@ -24,6 +24,7 @@ class GetFilteredStoreUseCase @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
+        route: String,
         category: StoreQueryCategory,
         sortType: StoreQuerySortType,
         distanceRange: StoreQueryDistance,
@@ -47,11 +48,11 @@ class GetFilteredStoreUseCase @Inject constructor(
                 onlyFavorites = onlyFavorites
             )
         }.flatMapLatest { storeQuery ->
-            storeRepository.getStoreStream(storeQuery)
+            storeRepository.getStoreStream(storeQuery = storeQuery, requestRoute = route)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(searchQuery: String) = combine(
+    operator fun invoke(route: String, searchQuery: String) = combine(
         userStoreRepository.getUser(),
         locationRepository.getLocalLocation()
     ) { user: User?, location: Location ->
@@ -61,6 +62,6 @@ class GetFilteredStoreUseCase @Inject constructor(
         .map { (user: User, location: Location) ->
             StoreQuery(userId = user.id, location = location, searchQuery = searchQuery)
         }.flatMapLatest { storeQuery ->
-            storeRepository.getStoreStream(storeQuery)
+            storeRepository.getStoreStream(storeQuery = storeQuery, requestRoute = route)
         }
 }

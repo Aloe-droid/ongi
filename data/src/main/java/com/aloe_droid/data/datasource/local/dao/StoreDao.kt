@@ -7,8 +7,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.aloe_droid.data.datasource.local.data.StoresWithQuery
 import com.aloe_droid.data.datasource.local.entity.StoreEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @Dao
 interface StoreDao {
@@ -29,7 +32,6 @@ interface StoreDao {
     )
     fun getStoresByQueryId(queryId: String): PagingSource<Int, StoreEntity>
 
-    @Transaction
     @Query(
         """
         SELECT *
@@ -43,8 +45,19 @@ interface StoreDao {
     )
     fun getTopStores(queryId: String, count: Int): Flow<List<StoreEntity>>
 
+    fun getTopStoresWithQueryId(
+        queryId: String,
+        count: Int
+    ): Flow<StoresWithQuery> = getTopStores(queryId = queryId, count = count)
+        .map { storeEntities: List<StoreEntity> ->
+            StoresWithQuery(storeList = storeEntities, queryId = queryId)
+        }.distinctUntilChanged()
+
     @Query("SELECT * FROM stores WHERE id = :id")
     suspend fun getStoreById(id: String): StoreEntity
+
+    @Query("SELECT * FROM stores WHERE id = :id")
+    fun getStoreFlowById(id: String): Flow<StoreEntity>
 
     @Update
     suspend fun updateStore(storeEntity: StoreEntity)
@@ -52,12 +65,14 @@ interface StoreDao {
     @Query("DELETE FROM stores")
     suspend fun clearAll()
 
-    @Query("""
+    @Query(
+        """
     DELETE FROM stores 
     WHERE id NOT IN (
         SELECT storeId 
         FROM store_query_cross_ref
     )
-""")
+"""
+    )
     suspend fun deleteStoresWithoutReferences(): Int
 }

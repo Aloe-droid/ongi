@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 import com.aloe_droid.ongi.R
 import com.aloe_droid.presentation.base.view.UiContract
 import com.aloe_droid.presentation.home.contract.Home
-import com.aloe_droid.presentation.map.contract.route.Map
+import com.aloe_droid.presentation.map.contract.Map
 import com.aloe_droid.presentation.search.contract.Search
 import com.aloe_droid.presentation.setting.contract.Setting
 
