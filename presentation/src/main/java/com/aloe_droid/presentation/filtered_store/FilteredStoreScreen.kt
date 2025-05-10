@@ -1,6 +1,7 @@
 package com.aloe_droid.presentation.filtered_store
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,7 +62,9 @@ fun FilteredStoreScreen(
     onRefresh: () -> Unit,
 ) {
     OnGiRefreshBox(
-        modifier = modifier.padding(horizontal = LargePadding),
+        modifier = modifier
+            .padding(horizontal = LargePadding)
+            .background(color = MaterialTheme.colorScheme.surface),
         isRefreshing = isRefresh,
         onRefresh = onRefresh,
     ) {
