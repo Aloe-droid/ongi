@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.paging.LoadState
@@ -15,6 +16,7 @@ import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.base.view.ScreenTransition
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStoreEffect
 import com.aloe_droid.presentation.filtered_store.contract.FilteredStoreEvent
@@ -23,13 +25,29 @@ import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilterNavTypes.StoreFilterTypeMap
 import com.aloe_droid.presentation.filtered_store.data.StoreSortType
 import com.aloe_droid.presentation.home.data.StoreData
+import com.aloe_droid.presentation.search.contract.Search
 import java.util.UUID
 
 fun NavGraphBuilder.filteredStoreScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToStore: (UUID) -> Unit,
-) = composable<FilteredStore>(typeMap = StoreFilterTypeMap) {
-
+) = composable<FilteredStore>(
+    typeMap = StoreFilterTypeMap,
+    enterTransition = {
+        ScreenTransition.slideInFromRight()
+    },
+    popEnterTransition = {
+        if (initialState.destination.hasRoute<Search>()) ScreenTransition.fadeInAnim()
+        else ScreenTransition.slideInFromLeft()
+    },
+    exitTransition = {
+        if (targetState.destination.hasRoute<Search>()) ScreenTransition.fadeOutAnim()
+        else ScreenTransition.slideOutToLeft()
+    },
+    popExitTransition = {
+        ScreenTransition.slideOutToRight()
+    }
+) {
     val viewModel: FilteredStoreViewModel = hiltViewModel()
     val uiState: FilteredStoreUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val storeItems: LazyPagingItems<StoreData> = viewModel.pagingDataFlow.collectAsLazyPagingItems()

@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.paging.compose.LazyPagingItems
@@ -15,6 +16,9 @@ import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.base.view.ScreenTransition
+import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
+import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.search.contract.Search
 import com.aloe_droid.presentation.search.contract.SearchEffect
 import com.aloe_droid.presentation.search.contract.SearchEvent
@@ -27,7 +31,19 @@ fun NavGraphBuilder.searchScreen(
     navigateToStore: (UUID) -> Unit,
     navigateToFilteredStore: (String) -> Unit,
     navigateUp: () -> Unit,
-) = composable<Search> { backStackEntry: NavBackStackEntry ->
+) = composable<Search>(
+    enterTransition = {
+        if (initialState.destination.hasRoute<Home>()) ScreenTransition.slideInFromRight()
+        else if (initialState.destination.hasRoute<FilteredStore>()) ScreenTransition.fadeInAnim()
+        else ScreenTransition.slideInFromLeft()
+    },
+    exitTransition = {
+        if (targetState.destination.hasRoute<Home>()) ScreenTransition.slideOutToRight()
+        else if (targetState.destination.hasRoute<FilteredStore>()) ScreenTransition.fadeOutAnim()
+        else ScreenTransition.slideOutToLeft()
+    },
+
+    ) { backStackEntry: NavBackStackEntry ->
     val fromBottomNavi: Boolean? = backStackEntry.arguments?.getBoolean(Search.iS_BOTTOM)
     val viewModel: SearchViewModel = hiltViewModel()
     val uiState: SearchUiState by viewModel.uiState.collectAsStateWithLifecycle()

@@ -10,12 +10,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.base.view.ScreenTransition
+import com.aloe_droid.presentation.map.contract.Map
 import com.aloe_droid.presentation.store.contract.Store
 import com.aloe_droid.presentation.store.contract.StoreEffect
 import com.aloe_droid.presentation.store.contract.StoreEvent
@@ -27,7 +30,16 @@ import kotlinx.serialization.InternalSerializationApi
 fun NavGraphBuilder.storeScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateUp: () -> Unit,
-) = composable<Store> {
+) = composable<Store>(
+    enterTransition = {
+        if(initialState.destination.hasRoute<Map>()) null
+        else ScreenTransition.slideInFromBottom()
+    },
+    popExitTransition = {
+        if (targetState.destination.hasRoute<Map>()) null
+        else ScreenTransition.slideOutToBottom()
+    }
+) {
     val context: Context = LocalContext.current
     val viewModel: StoreViewModel = hiltViewModel()
     val uiState: StoreUiState by viewModel.uiState.collectAsStateWithLifecycle()

@@ -17,6 +17,7 @@ import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
+import com.aloe_droid.presentation.base.view.ScreenTransition
 import com.aloe_droid.presentation.setting.contract.Setting
 import com.aloe_droid.presentation.setting.contract.SettingEffect
 import com.aloe_droid.presentation.setting.contract.SettingEvent
@@ -25,7 +26,12 @@ import com.aloe_droid.presentation.setting.contract.SettingUiState
 fun NavGraphBuilder.settingScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToFilteredStoreWithFavorite: () -> Unit,
-) = composable<Setting> {
+) = composable<Setting>(
+    enterTransition = { ScreenTransition.slideInFromRight() },
+    popEnterTransition = { ScreenTransition.slideInFromRight() },
+    exitTransition = { ScreenTransition.slideOutToRight() },
+    popExitTransition = { ScreenTransition.slideOutToRight() }
+) {
     val context: Context = LocalContext.current
     val viewModel: SettingViewModel = hiltViewModel()
     val uiState: SettingUiState by viewModel.uiState.collectAsStateWithLifecycle()
