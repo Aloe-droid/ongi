@@ -68,12 +68,17 @@ enum class StoreQueryCategory {
     NONE
 }
 
-enum class StoreQueryDistance() {
-    M_5,
-    K_1,
-    K_3,
-    K_5,
-    K_10,
-    K_15,
-    NONE
+enum class StoreQueryDistance(val maxKm: Float) {
+    M_5(0.5f),
+    K_1(1f),
+    K_3(3f),
+    K_5(5f),
+    K_10(10f),
+    K_15(15f),
+    K_20(20f),
+    K_30(30f),
+    K_40(40f),
+    K_50(50f),
+    K_60(60f),
+    NONE(-1f)
 }
