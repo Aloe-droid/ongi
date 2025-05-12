@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.aloe_droid.domain.entity.SearchHistory
 import com.aloe_droid.domain.entity.Store
 import com.aloe_droid.domain.usecase.DeleteSearchHistoryUseCase
@@ -17,19 +16,17 @@ import com.aloe_droid.presentation.search.contract.SearchEffect
 import com.aloe_droid.presentation.search.contract.SearchEvent
 import com.aloe_droid.presentation.search.contract.SearchUiState
 import com.aloe_droid.presentation.search.data.SearchedStore
-import com.aloe_droid.presentation.search.data.SearchedStore.Companion.toSearchedStore
+import com.aloe_droid.presentation.search.data.SearchedStore.Companion.toPagingSearchStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import java.util.UUID
 import javax.inject.Inject
 
@@ -43,33 +40,26 @@ class SearchViewModel @Inject constructor(
     private val deleteSearchHistoryUseCase: DeleteSearchHistoryUseCase
 ) : BaseViewModel<SearchUiState, SearchEvent, SearchEffect>(savedStateHandle) {
 
-    val queryResult: StateFlow<PagingData<SearchedStore>> = uiState.debounce { DEFAULT_DEBOUNCE }
-        .map { it.searchQuery }
-        .filter { it.isNotBlank() }
-        .distinctUntilChanged()
-        .flatMapLatest { query ->
-            val route = Search::class.java.name
-            getFilteredStoreUseCase(searchQuery = query, route = route)
-        }.map { pagingData: PagingData<Store> ->
-            pagingData.map { store: Store ->
-                store.toSearchedStore()
-            }
-        }.cachedIn(viewModelScope)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIME_OUT),
-            initialValue = PagingData.empty<SearchedStore>()
-        )
+    val queryResult: StateFlow<PagingData<SearchedStore>> by lazy {
+        uiState.debounce { DEFAULT_DEBOUNCE }
+            .map { it.searchQuery }
+            .distinctUntilChanged()
+            .flatMapLatest { query ->
+                val route: String = Search::class.java.name
+                if (query.isBlank()) flowOf(PagingData.empty<Store>())
+                else getFilteredStoreUseCase(searchQuery = query, route = route).safeRetry()
+            }.map { pagingData: PagingData<Store> -> pagingData.toPagingSearchStore() }
+            .cachedIn(viewModelScope)
+            .toViewModelState(initValue = PagingData.empty())
+    }
 
-    val searchHistory: StateFlow<PagingData<SearchHistory>> = uiState
-        .distinctUntilChangedBy { it.isInitialState }
-        .flatMapLatest { getSearchHistoryUseCase() }
-        .cachedIn(viewModelScope)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIME_OUT),
-            initialValue = PagingData.empty<SearchHistory>()
-        )
+    val searchHistory: StateFlow<PagingData<SearchHistory>> by lazy {
+        uiState
+            .distinctUntilChangedBy { it.isInitialState }
+            .flatMapLatest { getSearchHistoryUseCase().safeRetry() }
+            .cachedIn(viewModelScope)
+            .toViewModelState(initValue = PagingData.empty())
+    }
 
     override fun initState(savedStateHandle: SavedStateHandle): SearchUiState {
         return SearchUiState()

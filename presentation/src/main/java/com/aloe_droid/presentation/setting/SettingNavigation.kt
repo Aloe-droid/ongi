@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.aloe_droid.presentation.BuildConfig
@@ -18,23 +19,36 @@ import com.aloe_droid.presentation.base.component.LoadingScreen
 import com.aloe_droid.presentation.base.view.BaseSnackBarVisuals
 import com.aloe_droid.presentation.base.view.CollectSideEffects
 import com.aloe_droid.presentation.base.view.ScreenTransition
+import com.aloe_droid.presentation.filtered_store.contract.FilteredStore
 import com.aloe_droid.presentation.setting.contract.Setting
 import com.aloe_droid.presentation.setting.contract.SettingEffect
 import com.aloe_droid.presentation.setting.contract.SettingEvent
+import com.aloe_droid.presentation.setting.contract.SettingUiData
 import com.aloe_droid.presentation.setting.contract.SettingUiState
 
 fun NavGraphBuilder.settingScreen(
     showSnackMessage: (SnackbarVisuals) -> Unit,
     navigateToFilteredStoreWithFavorite: () -> Unit,
 ) = composable<Setting>(
-    enterTransition = { ScreenTransition.slideInFromRight() },
-    popEnterTransition = { ScreenTransition.slideInFromRight() },
-    exitTransition = { ScreenTransition.slideOutToRight() },
-    popExitTransition = { ScreenTransition.slideOutToRight() }
+    enterTransition = {
+        ScreenTransition.slideInFromRight()
+    },
+    popEnterTransition = {
+        if (initialState.destination.hasRoute<FilteredStore>()) ScreenTransition.slideInFromLeft()
+        else ScreenTransition.slideInFromRight()
+    },
+    exitTransition = {
+        if (targetState.destination.hasRoute<FilteredStore>()) ScreenTransition.slideOutToLeft()
+        else ScreenTransition.slideOutToRight()
+    },
+    popExitTransition = {
+        ScreenTransition.slideOutToRight()
+    }
 ) {
     val context: Context = LocalContext.current
     val viewModel: SettingViewModel = hiltViewModel()
     val uiState: SettingUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiData: SettingUiData by viewModel.uiData.collectAsStateWithLifecycle()
 
     CollectSideEffects(effectFlow = viewModel.uiEffect) { sideEffect: SettingEffect ->
         when (sideEffect) {
@@ -63,12 +77,11 @@ fun NavGraphBuilder.settingScreen(
     }
 
     if (uiState.isInitialState) {
-        viewModel.sendEvent(event = SettingEvent.LoadEvent)
         LoadingScreen(content = stringResource(id = R.string.loading))
     } else {
         SettingScreen(
-            storeCount = uiState.storeCount,
-            syncTime = uiState.syncTime,
+            storeCount = uiData.storeCount,
+            syncTime = uiData.syncTime,
             onClickFavoriteStore = {
                 val event = SettingEvent.ClickFavoriteStore
                 viewModel.sendEvent(event = event)

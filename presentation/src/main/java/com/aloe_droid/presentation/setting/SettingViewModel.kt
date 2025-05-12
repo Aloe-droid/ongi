@@ -1,14 +1,20 @@
 package com.aloe_droid.presentation.setting
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.aloe_droid.domain.entity.StoreSyncEntity
 import com.aloe_droid.domain.usecase.GetStoreSyncInfoUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.setting.contract.SettingEffect
 import com.aloe_droid.presentation.setting.contract.SettingEvent
+import com.aloe_droid.presentation.setting.contract.SettingUiData
+import com.aloe_droid.presentation.setting.contract.SettingUiData.Companion.toSettingData
 import com.aloe_droid.presentation.setting.contract.SettingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,13 +23,21 @@ class SettingViewModel @Inject constructor(
     private val getStoreSyncInfoUseCase: GetStoreSyncInfoUseCase,
 ) : BaseViewModel<SettingUiState, SettingEvent, SettingEffect>(savedStateHandle) {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiData: StateFlow<SettingUiData> by lazy {
+        uiState
+            .flatMapLatest { getStoreSyncInfoUseCase().safeRetry() }
+            .onEach { completeInitialState() }
+            .map { storeSyncEntity: StoreSyncEntity -> storeSyncEntity.toSettingData() }
+            .toViewModelState(initValue = SettingUiData())
+    }
+
     override fun initState(savedStateHandle: SavedStateHandle): SettingUiState {
         return SettingUiState()
     }
 
     override fun handleEvent(event: SettingEvent) {
         when (event) {
-            SettingEvent.LoadEvent -> handleLoad()
             SettingEvent.ClickFavoriteStore -> handleNavigateToFilteredStore()
             SettingEvent.ClickPrivacyPolicy -> handleMoveToPrivacyPolicy()
             SettingEvent.ClickInquiryToDeveloper -> handleMoveToInQueryToDeveloper()
@@ -41,15 +55,9 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun handleLoad() = viewModelScope.safeLaunch {
-        getStoreSyncInfoUseCase().safeCollect { storeSyncEntity: StoreSyncEntity ->
-            updateState { uiState: SettingUiState ->
-                uiState.copy(
-                    isInitialState = false,
-                    storeCount = storeSyncEntity.storeCount,
-                    syncTime = storeSyncEntity.syncTime
-                )
-            }
+    private fun completeInitialState() {
+        updateState { uiState: SettingUiState ->
+            uiState.copy(isInitialState = false)
         }
     }
 

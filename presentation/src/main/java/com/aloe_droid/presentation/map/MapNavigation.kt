@@ -17,10 +17,12 @@ import com.aloe_droid.presentation.map.component.CollectMapSideEffects
 import com.aloe_droid.presentation.map.component.LocationHandler
 import com.aloe_droid.presentation.map.contract.Map
 import com.aloe_droid.presentation.map.contract.MapEvent
+import com.aloe_droid.presentation.map.contract.MapUiData
 import com.aloe_droid.presentation.map.contract.MapUiState
 import com.aloe_droid.presentation.map.data.MapData
 import com.aloe_droid.presentation.map.data.StoreMapData
 import com.aloe_droid.presentation.setting.contract.Setting
+import com.aloe_droid.presentation.store.contract.Store
 import com.naver.maps.geometry.LatLng
 import java.util.UUID
 
@@ -30,15 +32,17 @@ fun NavGraphBuilder.mapScreen(
 ) = composable<Map>(
     enterTransition = {
         if (initialState.destination.hasRoute<Setting>()) ScreenTransition.slideInFromLeft()
+        else if (initialState.destination.hasRoute<Store>()) ScreenTransition.slideInFromTop()
         else ScreenTransition.slideInFromRight()
     },
     exitTransition = {
-        if(targetState.destination.hasRoute<Setting>()) ScreenTransition.slideOutToLeft()
+        if (targetState.destination.hasRoute<Setting>()) ScreenTransition.slideOutToLeft()
         else ScreenTransition.slideOutToRight()
     },
 ) {
     val viewModel: MapViewModel = hiltViewModel()
     val uiState: MapUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiData: MapUiData by viewModel.uiData.collectAsStateWithLifecycle()
     val storeListState: LazyListState = rememberLazyListState()
 
     CollectMapSideEffects(
@@ -51,14 +55,13 @@ fun NavGraphBuilder.mapScreen(
     LocationHandler(uiState = uiState, viewModel = viewModel)
 
     if (uiState.isInitialState) {
-        viewModel.sendEvent(event = MapEvent.LoadEvent)
         LoadingScreen(content = stringResource(id = R.string.loading))
     } else {
         MapScreen(
             location = LatLng(uiState.locationData.latitude, uiState.locationData.longitude),
             storeListState = storeListState,
-            storeItems = uiState.searchedStoreList,
-            selectedMarkerStore = uiState.selectedMarkerStore,
+            storeItems = uiData.searchedStoreList,
+            selectedMarkerStore = uiData.selectedMarkerStore,
             onLocationCheck = {
                 val event = MapEvent.CheckLocation
                 viewModel.sendEvent(event = event)

@@ -1,5 +1,7 @@
 package com.aloe_droid.presentation.search.data
 
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.aloe_droid.domain.entity.Store
 import com.aloe_droid.presentation.R
 import com.aloe_droid.presentation.filtered_store.data.StoreCategory
@@ -24,6 +26,10 @@ data class SearchedStore(
         private const val HAIR_SALON = "미용업"
         private const val USE = "이용업"
         private const val ETC = "기타비요식업"
+
+        fun PagingData<Store>.toPagingSearchStore(): PagingData<SearchedStore> = map {
+            it.toSearchedStore()
+        }
 
         fun Store.toSearchedStore() = SearchedStore(
             id = id,

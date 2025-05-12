@@ -29,9 +29,13 @@ class GetMapInfoUseCase @Inject constructor(
         .filter { it != StoreQueryDistance.NONE }
         .sortedBy { it.maxKm }
 
-    operator fun invoke(route: String): Flow<StoreMapEntity> {
-        val userFlow = userStoreRepository.getUser().filterNotNull()
-        val locationFlow = locationRepository.getLocalLocation()
+    operator fun invoke(route: String, isLocalLocation: Boolean): Flow<StoreMapEntity> {
+        val userFlow: Flow<User> = userStoreRepository.getUser().filterNotNull()
+        val locationFlow: Flow<Location> = if (isLocalLocation) {
+            locationRepository.getLocalLocation()
+        } else {
+            locationRepository.getLocation()
+        }
 
         return combine(userFlow, locationFlow) { user: User, location: Location ->
             StoreQuery(
@@ -55,27 +59,36 @@ class GetMapInfoUseCase @Inject constructor(
 
     operator fun invoke(
         route: String,
+        isLocalLocation: Boolean,
         distance: Float,
         latitude: Double,
         longitude: Double
-    ): Flow<List<Store>> {
+    ): Flow<StoreMapEntity> {
         val maxDistance: StoreQueryDistance = findClosestMaxDistance(inputKm = distance)
-        return userStoreRepository.getUser().filterNotNull()
-            .map { user: User ->
-                StoreQuery(
-                    userId = user.id,
-                    location = Location(latitude = latitude, longitude = longitude),
-                    category = StoreQueryCategory.NONE,
-                    sortType = StoreQuerySortType.DISTANCE,
-                    distanceRange = maxDistance,
-                    searchQuery = "",
-                    onlyFavorites = false,
-                    page = 0,
-                    size = Integer.MAX_VALUE - 1
-                )
-            }.flatMapLatest { storeQuery ->
-                storeRepository.getStoreList(storeQuery = storeQuery, requestRoute = route)
-            }
+        val userFlow: Flow<User> = userStoreRepository.getUser().filterNotNull()
+        val locationFlow: Flow<Location> = if (isLocalLocation) {
+            locationRepository.getLocalLocation()
+        } else {
+            locationRepository.getLocation()
+        }
+
+        return userFlow.map { user: User ->
+            StoreQuery(
+                userId = user.id,
+                location = Location(latitude = latitude, longitude = longitude),
+                category = StoreQueryCategory.NONE,
+                sortType = StoreQuerySortType.DISTANCE,
+                distanceRange = maxDistance,
+                searchQuery = "",
+                onlyFavorites = false,
+                page = 0,
+                size = Integer.MAX_VALUE - 1
+            )
+        }.flatMapLatest { storeQuery ->
+            storeRepository.getStoreList(storeQuery = storeQuery, requestRoute = route)
+        }.combine(locationFlow) { storeList: List<Store>, location: Location ->
+            StoreMapEntity(location = location, stores = storeList)
+        }
     }
 
     private fun findClosestMaxDistance(inputKm: Float): StoreQueryDistance {

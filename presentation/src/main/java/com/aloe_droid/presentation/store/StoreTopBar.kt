@@ -25,7 +25,7 @@ import com.aloe_droid.presentation.base.theme.DefaultIconSize
 import com.aloe_droid.presentation.base.theme.DefaultTopBarMaxHeight
 import com.aloe_droid.presentation.base.theme.StarColor
 import com.aloe_droid.presentation.store.contract.StoreEvent
-import com.aloe_droid.presentation.store.contract.StoreUiState
+import com.aloe_droid.presentation.store.contract.StoreUiData
 import com.aloe_droid.presentation.store.data.StoreData
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,8 +35,8 @@ fun StoreTopBar(
     navigateUp: () -> Unit
 ) {
     val viewModel: StoreViewModel = hiltViewModel(viewModelStoreOwner = backStackEntry)
-    val uiState: StoreUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val store: StoreData? = uiState.store
+    val uiData: StoreUiData by viewModel.uiData.collectAsStateWithLifecycle()
+    val store: StoreData? = uiData.store
     val (isFavorite, setFavorite) = remember(store?.isLikeStore == true) {
         mutableStateOf(store?.isLikeStore == true)
     }

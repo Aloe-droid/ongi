@@ -28,21 +28,18 @@ data class StoreMapData(
     }
 
     companion object {
-        fun List<Store>.toStoreMapDataList(
-            myLat: Double? = null,
-            myLon: Double? = null
-        ): List<StoreMapData> = map {
+        fun List<Store>.toStoreMapDataList(myLat: Double, myLon: Double): List<StoreMapData> = map {
             it.toStoreMapData(myLat = myLat, myLon = myLon)
         }.sortedBy { it.distance }
 
-        fun Store.toStoreMapData(myLat: Double? = null, myLon: Double? = null) = StoreMapData(
+        fun Store.toStoreMapData(myLat: Double, myLon: Double) = StoreMapData(
             id = id,
             name = name,
             address = address,
             favoriteCount = favoriteCount,
             latitude = latitude,
             longitude = longitude,
-            distance = if (myLat == null || myLon == null) {
+            distance = if (myLat == latitude || myLon == longitude) {
                 distance
             } else {
                 LocationUtil.calculateDistanceInKm(

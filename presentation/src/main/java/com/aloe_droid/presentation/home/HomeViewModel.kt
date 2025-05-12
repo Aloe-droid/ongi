@@ -1,7 +1,6 @@
 package com.aloe_droid.presentation.home
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.aloe_droid.domain.entity.HomeEntity
 import com.aloe_droid.domain.exception.LocationPermissionException
 import com.aloe_droid.domain.usecase.GetHomeInfoUseCase
@@ -12,13 +11,19 @@ import com.aloe_droid.presentation.filtered_store.data.StoreSortType
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
+import com.aloe_droid.presentation.home.contract.HomeUiData
+import com.aloe_droid.presentation.home.contract.HomeUiData.Companion.toHomeData
 import com.aloe_droid.presentation.home.contract.HomeUiState
-import com.aloe_droid.presentation.home.data.BannerData.Companion.toBannerDataList
-import com.aloe_droid.presentation.home.data.LocationData.Companion.toLocationData
 import com.aloe_droid.presentation.home.data.StoreData
-import com.aloe_droid.presentation.home.data.StoreData.Companion.toStoreData
 import com.google.android.gms.common.api.ResolvableApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -28,11 +33,21 @@ class HomeViewModel @Inject constructor(
     private val getHomeInfoUseCase: GetHomeInfoUseCase
 ) : BaseViewModel<HomeUiState, HomeEvent, HomeEffect>(savedStateHandle) {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiData: StateFlow<HomeUiData> by lazy {
+        uiState.map { state: HomeUiState -> state.shouldFetchHomeData }
+            .distinctUntilChanged()
+            .filter { shouldFetchHomeData: Boolean -> shouldFetchHomeData }
+            .flatMapLatest { getHomeInfoUseCase(route = Home::class.java.name).safeRetry() }
+            .onEach { homeEntity: HomeEntity -> checkEntity(homeEntity) }
+            .map { homeEntity: HomeEntity -> homeEntity.toHomeData() }
+            .toViewModelState(initValue = HomeUiData())
+    }
+
     override fun initState(savedStateHandle: SavedStateHandle): HomeUiState = HomeUiState()
 
     override fun handleEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.LoadEvent -> handleLoad()
             is HomeEvent.RefreshEvent -> handleRefresh()
             is HomeEvent.SelectBannerEvent -> handleSelectBanner(event.bannerData.url)
             HomeEvent.LocationRetry -> handleRetry()
@@ -66,44 +81,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun handleLoad() = viewModelScope.safeLaunch {
-        val route: String = Home::class.java.name
-        getHomeInfoUseCase(route = route).safeCollect { homeEntity: HomeEntity ->
-            if (homeEntity.location.isDefault) handleLocationError(homeEntity.location.error)
-
-            updateState { state: HomeUiState ->
-                state.copy(
-                    isInitialState = false,
-                    bannerList = homeEntity.bannerList.toBannerDataList(),
-                    locationData = homeEntity.location.toLocationData(),
-                    favoriteStoreList = homeEntity.favoriteStoreList.toStoreData(),
-                    nearbyStoreList = homeEntity.nearbyStoreList.toStoreData()
-                )
-            }
-        }
-    }
-
-    private fun handleRefresh() = viewModelScope.safeLaunch {
-        val route: String = Home::class.java.name
+    private fun handleRefresh() {
         updateState { state: HomeUiState ->
             state.copy(
                 isRefreshing = true,
                 isNeedPermission = false
             )
-        }
-
-        getHomeInfoUseCase(route = route).safeCollect { homeEntity: HomeEntity ->
-            if (homeEntity.location.isDefault) handleLocationError(homeEntity.location.error)
-
-            updateState { state: HomeUiState ->
-                state.copy(
-                    isRefreshing = false,
-                    bannerList = homeEntity.bannerList.toBannerDataList(),
-                    locationData = homeEntity.location.toLocationData(),
-                    favoriteStoreList = homeEntity.favoriteStoreList.toStoreData(),
-                    nearbyStoreList = homeEntity.nearbyStoreList.toStoreData()
-                )
-            }
         }
     }
 
@@ -121,6 +104,14 @@ class HomeViewModel @Inject constructor(
     private fun handleSelectStore(storeData: StoreData) {
         val effect: HomeEffect = HomeEffect.NavigateStore(id = storeData.id)
         sendSideEffect(uiEffect = effect)
+    }
+
+    private fun checkEntity(homeEntity: HomeEntity) {
+        updateState { uiState ->
+            uiState.copy(isInitialState = false, isRefreshing = false)
+        }
+
+        if (homeEntity.location.isDefault) handleLocationError(homeEntity.location.error)
     }
 
     private fun handleLocationError(throwable: Throwable?) = when (throwable) {

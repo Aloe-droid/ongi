@@ -42,8 +42,10 @@ fun NavGraphBuilder.searchScreen(
         else if (targetState.destination.hasRoute<FilteredStore>()) ScreenTransition.fadeOutAnim()
         else ScreenTransition.slideOutToLeft()
     },
-
-    ) { backStackEntry: NavBackStackEntry ->
+    popEnterTransition = {
+        ScreenTransition.slideInFromLeft()
+    }
+) { backStackEntry: NavBackStackEntry ->
     val fromBottomNavi: Boolean? = backStackEntry.arguments?.getBoolean(Search.iS_BOTTOM)
     val viewModel: SearchViewModel = hiltViewModel()
     val uiState: SearchUiState by viewModel.uiState.collectAsStateWithLifecycle()

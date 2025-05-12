@@ -5,7 +5,6 @@ import com.aloe_droid.presentation.map.data.MapData
 import com.aloe_droid.presentation.map.data.StoreMapData
 
 sealed class MapEvent : UiContract.Event {
-    data object LoadEvent : MapEvent()
     data object LocationRetry : MapEvent()
     data class LocationSkip(val skipMessage: String) : MapEvent()
     data object CheckLocation : MapEvent()
