@@ -48,6 +48,7 @@
     <string name="inquiry">개발자에게 문의하기</string>
     <string name="good_store">착한 가격 업소</string>
     <string name="update">최신화</string>
+    <string name="go_location_auth">위치 권한 허용하기</string>
 
     <string name="deny_location">위치 권한을 거부하셨습니다.\n기본 위치는 서울 중심입니다.</string>
     <string name="deny_gps">GPS가 꺼져 있습니다.\n기본 위치는 서울 중심입니다.</string>

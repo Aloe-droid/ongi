@@ -21,6 +21,7 @@ fun SettingScreen(
     onClickFavoriteStore: () -> Unit,
     onClickPrivacyPolicy: () -> Unit,
     onClickInQueryToDeveloper: () -> Unit,
+    onClickLocationAuth: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -36,7 +37,8 @@ fun SettingScreen(
         SettingButtons(
             onClickFavoriteStore = onClickFavoriteStore,
             onClickPrivacyPolicy = onClickPrivacyPolicy,
-            onClickInQueryToDeveloper = onClickInQueryToDeveloper
+            onClickInQueryToDeveloper = onClickInQueryToDeveloper,
+            onClickLocationAuth = onClickLocationAuth
         )
     }
 }
@@ -49,6 +51,7 @@ fun SettingScreenPreview() {
         syncTime = System.now(),
         onClickFavoriteStore = {},
         onClickPrivacyPolicy = {},
-        onClickInQueryToDeveloper = {}
+        onClickInQueryToDeveloper = {},
+        onClickLocationAuth = {}
     )
 }

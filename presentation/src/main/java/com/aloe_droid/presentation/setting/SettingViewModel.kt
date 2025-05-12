@@ -41,6 +41,7 @@ class SettingViewModel @Inject constructor(
             SettingEvent.ClickFavoriteStore -> handleNavigateToFilteredStore()
             SettingEvent.ClickPrivacyPolicy -> handleMoveToPrivacyPolicy()
             SettingEvent.ClickInquiryToDeveloper -> handleMoveToInQueryToDeveloper()
+            SettingEvent.ClickLocationAuth -> handleMoveToLocationAuth()
         }
     }
 
@@ -73,6 +74,11 @@ class SettingViewModel @Inject constructor(
 
     private fun handleMoveToInQueryToDeveloper() {
         val effect = SettingEffect.MoveToInQueryToDeveloper
+        sendSideEffect(uiEffect = effect)
+    }
+
+    private fun handleMoveToLocationAuth() {
+        val effect = SettingEffect.MoveToLocationAuth
         sendSideEffect(uiEffect = effect)
     }
 
