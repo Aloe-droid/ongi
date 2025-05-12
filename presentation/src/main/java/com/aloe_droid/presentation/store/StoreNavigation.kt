@@ -22,6 +22,7 @@ import com.aloe_droid.presentation.map.contract.Map
 import com.aloe_droid.presentation.store.contract.Store
 import com.aloe_droid.presentation.store.contract.StoreEffect
 import com.aloe_droid.presentation.store.contract.StoreEvent
+import com.aloe_droid.presentation.store.contract.StoreUiData
 import com.aloe_droid.presentation.store.contract.StoreUiState
 import com.aloe_droid.presentation.store.data.AddressData
 import kotlinx.serialization.InternalSerializationApi
@@ -32,17 +33,18 @@ fun NavGraphBuilder.storeScreen(
     navigateUp: () -> Unit,
 ) = composable<Store>(
     enterTransition = {
-        if(initialState.destination.hasRoute<Map>()) null
+        if (initialState.destination.hasRoute<Map>()) null
         else ScreenTransition.slideInFromBottom()
     },
     popExitTransition = {
-        if (targetState.destination.hasRoute<Map>()) null
+        if (targetState.destination.hasRoute<Map>()) ScreenTransition.slideOutToBottom()
         else ScreenTransition.slideOutToBottom()
     }
 ) {
     val context: Context = LocalContext.current
     val viewModel: StoreViewModel = hiltViewModel()
     val uiState: StoreUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiData: StoreUiData by viewModel.uiData.collectAsStateWithLifecycle()
 
     CollectSideEffects(effectFlow = viewModel.uiEffect) { sideEffect: StoreEffect ->
         when (sideEffect) {
@@ -74,21 +76,20 @@ fun NavGraphBuilder.storeScreen(
         }
     }
 
-    Screen(uiState = uiState, viewModel = viewModel)
+    Screen(uiState = uiState, uiData = uiData, viewModel = viewModel)
 }
 
 @Composable
 private fun Screen(
     uiState: StoreUiState,
+    uiData: StoreUiData,
     viewModel: StoreViewModel
 ) {
     if (uiState.isInitialState) {
-        viewModel.sendEvent(event = StoreEvent.LoadEvent)
         LoadingScreen(content = stringResource(id = R.string.loading))
-
-    } else if (uiState.store != null) {
+    } else if (uiData.store != null) {
         StoreScreen(
-            storeData = uiState.store,
+            storeData = uiData.store,
             onCallClick = { phone: String ->
                 val event = StoreEvent.CallEvent(phone = phone)
                 viewModel.sendEvent(event = event)

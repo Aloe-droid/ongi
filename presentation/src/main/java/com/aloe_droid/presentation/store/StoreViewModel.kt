@@ -10,11 +10,21 @@ import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.store.contract.Store
 import com.aloe_droid.presentation.store.contract.StoreEffect
 import com.aloe_droid.presentation.store.contract.StoreEvent
+import com.aloe_droid.presentation.store.contract.StoreUiData
 import com.aloe_droid.presentation.store.contract.StoreUiState
 import com.aloe_droid.presentation.store.data.AddressData
 import com.aloe_droid.presentation.store.data.StoreData
 import com.aloe_droid.presentation.store.data.StoreData.Companion.toStoreData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
 
@@ -25,6 +35,18 @@ class StoreViewModel @Inject constructor(
     private val toggleStoreLikeUseCase: ToggleStoreLikeUseCase
 ) : BaseViewModel<StoreUiState, StoreEvent, StoreEffect>(savedStateHandle) {
 
+    private val localStore = MutableStateFlow<StoreData?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiData: StateFlow<StoreUiData> by lazy {
+        uiState
+            .flatMapLatest { getStoreInfoUseCase(storeId = currentState.id).safeRetry() }
+            .onEach { completeInitialState() }
+            .map { storeEntity: StoreEntity -> StoreUiData(store = storeEntity.toStoreData()) }
+            .combineWithLocalUiData()
+            .toViewModelState(initValue = StoreUiData())
+    }
+
     override fun initState(savedStateHandle: SavedStateHandle): StoreUiState {
         val store: Store = savedStateHandle.toRoute()
         return StoreUiState(id = UUID.fromString(store.id))
@@ -32,7 +54,6 @@ class StoreViewModel @Inject constructor(
 
     override fun handleEvent(event: StoreEvent) {
         when (event) {
-            StoreEvent.LoadEvent -> handleLoad()
             is StoreEvent.CantFindStoreEvent -> handleCantFindStore(event.message)
             StoreEvent.ToggleFavorite -> handleToggleFavorite()
             is StoreEvent.CallEvent -> handleCall(event.phone)
@@ -40,12 +61,9 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    private fun handleLoad() = viewModelScope.safeLaunch {
-        val storeId: UUID = currentState.id
-        getStoreInfoUseCase(storeId = storeId).safeCollect { storeEntity: StoreEntity ->
-            updateState { uiState: StoreUiState ->
-                uiState.copy(isInitialState = false, store = storeEntity.toStoreData())
-            }
+    private fun completeInitialState() {
+        updateState { uiState: StoreUiState ->
+            uiState.copy(isInitialState = false)
         }
     }
 
@@ -88,16 +106,17 @@ class StoreViewModel @Inject constructor(
     }
 
     private fun toggleFavorite(isLike: Boolean) {
-        updateState { uiState: StoreUiState ->
-            val prevStore = uiState.store ?: return@updateState uiState
-            val favoriteCount = with(prevStore.favoriteCount) {
-                if (isLike) plus(1) else minus(1)
-            }
-            val store: StoreData = prevStore.copy(
-                favoriteCount = favoriteCount,
-                isLikeStore = isLike
-            )
-            uiState.copy(store = store)
+        val prevStoreData: StoreData = uiData.value.store ?: return
+        val favoriteCount: Int = with(prevStoreData.favoriteCount) {
+            if (isLike) plus(1)
+            else minus(1)
         }
+        val newStoreData = prevStoreData.copy(favoriteCount = favoriteCount)
+        localStore.update { newStoreData }
     }
+
+    private fun Flow<StoreUiData>.combineWithLocalUiData(): Flow<StoreUiData> =
+        combine(localStore) { remote: StoreUiData, local: StoreData? ->
+            local?.let { remote.copy(store = it) } ?: remote
+        }
 }

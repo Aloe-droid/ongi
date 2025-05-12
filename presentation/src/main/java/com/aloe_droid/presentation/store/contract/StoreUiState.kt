@@ -9,5 +9,9 @@ import java.util.UUID
 data class StoreUiState(
     val id: UUID,
     val isInitialState: Boolean = true,
-    val store: StoreData? = null
 ) : UiContract.State
+
+@Stable
+data class StoreUiData(
+    val store: StoreData? = null
+)
