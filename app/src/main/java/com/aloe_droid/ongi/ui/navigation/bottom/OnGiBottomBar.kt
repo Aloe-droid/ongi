@@ -2,6 +2,7 @@ package com.aloe_droid.ongi.ui.navigation.bottom
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -13,8 +14,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.toRoute
-import com.aloe_droid.ongi.ui.theme.SelectColor
-import com.aloe_droid.ongi.ui.theme.UnSelectColor
 import com.aloe_droid.presentation.base.theme.ZeroDp
 import com.aloe_droid.presentation.base.view.UiContract.Route
 import com.aloe_droid.presentation.search.contract.Search
@@ -39,7 +38,9 @@ fun OnGiBottomBar(
 private fun BottomBar(
     bottomRouteList: List<BottomRoute>,
     backStackEntry: NavBackStackEntry?,
-    selectRoute: (Route) -> Unit
+    selectRoute: (Route) -> Unit,
+    selectedColor: Color = MaterialTheme.colorScheme.onSurface,
+    unSelectedColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
 ) {
     NavigationBar(windowInsets = WindowInsets(bottom = ZeroDp)) {
         bottomRouteList.forEach { bottomRoute: BottomRoute ->
@@ -50,7 +51,7 @@ private fun BottomBar(
                     }
                 } == true
                 val res: Int = if (isSelected) selectedIconRes else unSelectedIconRes
-                val color: Color = if (isSelected) SelectColor else UnSelectColor
+                val color: Color = if (isSelected) selectedColor else unSelectedColor
 
                 NavigationBarItem(
                     icon = {

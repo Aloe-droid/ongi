@@ -1,6 +1,8 @@
 package com.aloe_droid.ongi.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -25,8 +27,11 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val splashViewModel: SplashViewModel by viewModels()
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         initView()
         initCollect()
         if (splashViewModel.currentState.isInitState) {
