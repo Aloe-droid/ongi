@@ -7,4 +7,5 @@ sealed class SettingEffect : UiContract.SideEffect {
     data object NavigateToFilteredStore: SettingEffect()
     data object MoveToPrivacyPolicy: SettingEffect()
     data object MoveToInQueryToDeveloper: SettingEffect()
+    data object MoveToLocationAuth: SettingEffect()
 }

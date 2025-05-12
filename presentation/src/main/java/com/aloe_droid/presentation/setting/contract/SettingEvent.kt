@@ -6,4 +6,5 @@ sealed class SettingEvent : UiContract.Event {
     data object ClickFavoriteStore : SettingEvent()
     data object ClickPrivacyPolicy : SettingEvent()
     data object ClickInquiryToDeveloper : SettingEvent()
+    data object ClickLocationAuth: SettingEvent()
 }
