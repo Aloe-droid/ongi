@@ -11,10 +11,12 @@ import kotlinx.coroutines.channels.ChannelResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -56,6 +58,13 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
             }
     }
 
+    protected fun <T> Flow<T>.safeRetry(): Flow<T> =
+        retryWhen { throwable: Throwable, attempt: Long ->
+            handleRetry(throwable = throwable, attempt = attempt)
+        }.catch { throwable: Throwable ->
+            handleError(throwable = throwable)
+        }
+
     protected suspend fun <T> Flow<T>.safeCollect(collector: suspend (T) -> Unit) =
         retryWhen { throwable: Throwable, attempt: Long ->
             handleRetry(throwable = throwable, attempt = attempt)
@@ -76,6 +85,12 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
         delay(RETRY_INTERVAL)
         return true
     }
+
+    protected fun <T> Flow<T>.toViewModelState(initValue: T) = stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = TIME_OUT),
+        initialValue = initValue
+    )
 
     abstract fun initState(savedStateHandle: SavedStateHandle): UiState
 
