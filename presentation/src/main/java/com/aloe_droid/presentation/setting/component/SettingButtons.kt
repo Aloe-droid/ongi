@@ -13,6 +13,7 @@ fun ColumnScope.SettingButtons(
     onClickFavoriteStore: () -> Unit,
     onClickPrivacyPolicy: () -> Unit,
     onClickInQueryToDeveloper: () -> Unit,
+    onClickLocationAuth: () -> Unit,
 ) {
 
     IconText(
@@ -37,5 +38,13 @@ fun ColumnScope.SettingButtons(
         shape = RectangleShape,
         textPadding = SemiLargePadding,
         onClick = onClickInQueryToDeveloper
+    )
+
+    IconText(
+        text = stringResource(id = R.string.go_location_auth),
+        iconRes = R.drawable.location,
+        shape = RectangleShape,
+        textPadding = SemiLargePadding,
+        onClick = onClickLocationAuth
     )
 }
