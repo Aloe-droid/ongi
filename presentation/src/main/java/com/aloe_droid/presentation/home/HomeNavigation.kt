@@ -21,6 +21,8 @@ import com.aloe_droid.presentation.home.component.LocationHandler
 import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
+import com.aloe_droid.presentation.home.contract.HomeUiData
+import com.aloe_droid.presentation.home.contract.HomeUiState
 import com.aloe_droid.presentation.home.data.BannerData
 import com.aloe_droid.presentation.home.data.CategoryData
 import com.aloe_droid.presentation.home.data.StoreData
@@ -38,7 +40,8 @@ fun NavGraphBuilder.homeScreen(
 ) {
 
     val homeViewModel: HomeViewModel = hiltViewModel()
-    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: HomeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val uiData: HomeUiData by homeViewModel.uiData.collectAsStateWithLifecycle()
     val context: Context = LocalContext.current
 
     CollectSideEffects(homeViewModel.uiEffect) { sideEffect: HomeEffect ->
@@ -69,15 +72,14 @@ fun NavGraphBuilder.homeScreen(
     LocationHandler(uiState = uiState, viewModel = homeViewModel)
 
     if (uiState.isInitialState) {
-        homeViewModel.sendEvent(event = HomeEvent.LoadEvent)
         LoadingScreen(content = stringResource(id = R.string.loading))
     } else {
         HomeScreen(
             isRefreshing = uiState.isRefreshing,
-            bannerList = uiState.bannerList,
             categoryList = uiState.categoryList,
-            favoriteStoreList = uiState.favoriteStoreList,
-            nearbyStoreList = uiState.nearbyStoreList,
+            bannerList = uiData.bannerList,
+            favoriteStoreList = uiData.favoriteStoreList,
+            nearbyStoreList = uiData.nearbyStoreList,
             selectBanner = { banner: BannerData ->
                 val event: HomeEvent = HomeEvent.SelectBannerEvent(bannerData = banner)
                 homeViewModel.sendEvent(event = event)

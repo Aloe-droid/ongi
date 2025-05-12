@@ -6,7 +6,6 @@ import com.aloe_droid.presentation.home.data.CategoryData
 import com.aloe_droid.presentation.home.data.StoreData
 
 sealed class HomeEvent : UiContract.Event {
-    data object LoadEvent : HomeEvent()
     data object RefreshEvent : HomeEvent()
     data object LocationRetry : HomeEvent()
     data class LocationSkip(val skipMessage: String) : HomeEvent()
