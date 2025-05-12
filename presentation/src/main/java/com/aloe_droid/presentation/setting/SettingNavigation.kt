@@ -2,6 +2,7 @@ package com.aloe_droid.presentation.setting
 
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.getValue
@@ -73,6 +74,13 @@ fun NavGraphBuilder.settingScreen(
                 }
                 context.startActivity(intent)
             }
+
+            SettingEffect.MoveToLocationAuth -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = "package:${context.packageName}".toUri()
+                }
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -92,6 +100,10 @@ fun NavGraphBuilder.settingScreen(
             },
             onClickInQueryToDeveloper = {
                 val event = SettingEvent.ClickInquiryToDeveloper
+                viewModel.sendEvent(event = event)
+            },
+            onClickLocationAuth = {
+                val event = SettingEvent.ClickLocationAuth
                 viewModel.sendEvent(event = event)
             }
         )
