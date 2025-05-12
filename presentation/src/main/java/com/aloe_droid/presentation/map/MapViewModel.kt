@@ -1,19 +1,16 @@
 package com.aloe_droid.presentation.map
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
-import com.aloe_droid.domain.entity.Location
 import com.aloe_droid.domain.entity.Store
 import com.aloe_droid.domain.entity.StoreMapEntity
 import com.aloe_droid.domain.exception.LocationPermissionException
-import com.aloe_droid.domain.usecase.GetLocationUseCase
 import com.aloe_droid.domain.usecase.GetMapInfoUseCase
 import com.aloe_droid.domain.usecase.GetStoreInfoUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.home.data.LocationData.Companion.toLocationData
-import com.aloe_droid.presentation.map.contract.Map
 import com.aloe_droid.presentation.map.contract.MapEffect
 import com.aloe_droid.presentation.map.contract.MapEvent
+import com.aloe_droid.presentation.map.contract.MapUiData
 import com.aloe_droid.presentation.map.contract.MapUiState
 import com.aloe_droid.presentation.map.data.MapData
 import com.aloe_droid.presentation.map.data.StoreMapData
@@ -21,20 +18,62 @@ import com.aloe_droid.presentation.map.data.StoreMapData.Companion.toStoreMapDat
 import com.aloe_droid.presentation.map.data.StoreMapData.Companion.toStoreMapDataList
 import com.google.android.gms.common.api.ResolvableApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMapInfoUseCase: GetMapInfoUseCase,
-    private val getLocationUseCase: GetLocationUseCase,
     private val getStoreInfoUseCase: GetStoreInfoUseCase,
 ) : BaseViewModel<MapUiState, MapEvent, MapEffect>(savedStateHandle) {
 
-    private var selectedStoreJob: Job? = null
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val searchedStores: Flow<List<StoreMapData>> by lazy {
+        uiState.distinctUntilChanged(MapUiState.changeComparator)
+            .flatMapLatest { mapUiState ->
+                buildMapInfoFlow(mapUiState)
+            }.onEach { mapEntity: StoreMapEntity ->
+                checkEntity(mapEntity = mapEntity)
+            }.map { mapEntity: StoreMapEntity ->
+                val location = currentState.locationData
+                val myLat: Double = location.latitude
+                val myLon: Double = location.longitude
+                mapEntity.stores.toStoreMapDataList(myLat = myLat, myLon = myLon)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val markerStore: Flow<StoreMapData?> by lazy {
+        uiState.distinctUntilChangedBy { it.selectedMarkerId }
+            .flatMapLatest { mapUiState: MapUiState ->
+                val id: UUID? = mapUiState.selectedMarkerId
+                if (id != null) getStoreInfoUseCase.getLocalStore(storeId = id)
+                else flowOf(null)
+            }.map { store: Store? ->
+                val location = currentState.locationData
+                val myLat: Double = location.latitude
+                val myLon: Double = location.longitude
+                store?.toStoreMapData(myLat = myLat, myLon = myLon)
+            }
+    }
+
+    val uiData: StateFlow<MapUiData> by lazy {
+        combine(searchedStores, markerStore) { stores, selectStore ->
+            MapUiData(selectedMarkerStore = selectStore, searchedStoreList = stores)
+        }.toViewModelState(initValue = MapUiData())
+    }
 
     override fun initState(savedStateHandle: SavedStateHandle): MapUiState {
         return MapUiState()
@@ -42,7 +81,6 @@ class MapViewModel @Inject constructor(
 
     override fun handleEvent(event: MapEvent) {
         when (event) {
-            MapEvent.LoadEvent -> handleLoad()
             MapEvent.LocationRetry -> handleRetry()
             is MapEvent.LocationSkip -> handlePermissionSkip(event.skipMessage)
             MapEvent.CheckLocation -> handleCheckLocation()
@@ -53,21 +91,24 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun handleLoad() = viewModelScope.safeLaunch {
-        val route = Map::class.java.name
-        val storeEntity: StoreMapEntity = getMapInfoUseCase.invoke(route = route).first()
-        updateState { uiState: MapUiState ->
+    private fun checkEntity(mapEntity: StoreMapEntity) {
+        updateState { uiState ->
+            val mapData: MapData = if (uiState.isInitialState) {
+                MapData(mapCenter = mapEntity.location.toLocationData())
+            } else {
+                uiState.mapData
+            }
+
             uiState.copy(
                 isInitialState = false,
-                selectedMarkerStore = null,
-                locationData = storeEntity.location.toLocationData(),
-                searchedStoreList = storeEntity.stores.toStoreMapDataList(),
-                mapData = MapData(
-                    mapCenter = storeEntity.location.toLocationData(),
-                    distance = uiState.mapData.distance
-                )
+                checkLocation = false,
+                findStores = false,
+                locationData = mapEntity.location.toLocationData(),
+                mapData = mapData
             )
         }
+
+        if (mapEntity.location.isDefault) handleLocationError(mapEntity.location.error)
     }
 
     private fun handleChangeMapInfo(mapData: MapData) {
@@ -76,43 +117,17 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun handleSearchStores() = viewModelScope.safeLaunch {
-        selectedStoreJob?.cancel()
+    private fun handleSearchStores() {
         updateState { uiState: MapUiState ->
-            uiState.copy(selectedMarkerStore = null)
+            uiState.copy(findStores = true, selectedMarkerId = null)
         }
-
         val effect = MapEffect.ScrollToFirstPosition
         sendSideEffect(uiEffect = effect)
-
-        val mapData = currentState.mapData
-        val route = Map::class.java.name
-        getMapInfoUseCase(
-            route = route,
-            distance = mapData.distance,
-            latitude = mapData.mapCenter.latitude,
-            longitude = mapData.mapCenter.longitude
-        ).safeCollect { storeList: List<Store> ->
-            updateState { uiState: MapUiState ->
-                uiState.copy(
-                    searchedStoreList = storeList.toStoreMapDataList(
-                        myLat = currentState.locationData.latitude,
-                        myLon = currentState.locationData.longitude
-                    )
-                )
-            }
-        }
     }
 
     private fun handleSelectStoreMaker(storeData: StoreMapData) {
-        viewModelScope.safeLaunch {
-            getStoreInfoUseCase.getLocalStore(storeId = storeData.id).safeCollect { store: Store ->
-                updateState { uiState: MapUiState ->
-                    uiState.copy(selectedMarkerStore = store.toStoreMapData())
-                }
-            }
-        }.also {
-            selectedStoreJob = it
+        updateState { uiState: MapUiState ->
+            uiState.copy(selectedMarkerId = storeData.id)
         }
     }
 
@@ -121,16 +136,9 @@ class MapViewModel @Inject constructor(
         sendSideEffect(uiEffect = effect)
     }
 
-    private fun handleCheckLocation() = viewModelScope.safeLaunch {
-        getLocationUseCase().safeCollect { location: Location ->
-            if (location.isDefault) handleLocationError(location.error)
-
-            updateState { uiState: MapUiState ->
-                uiState.copy(
-                    isInitialState = false,
-                    locationData = location.toLocationData()
-                )
-            }
+    private fun handleCheckLocation() {
+        updateState { uiState: MapUiState ->
+            uiState.copy(checkLocation = true)
         }
     }
 
@@ -168,10 +176,34 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    private fun buildMapInfoFlow(mapUiState: MapUiState): Flow<StoreMapEntity> {
+        val route = Map::class.java.name
+        val flow: Flow<StoreMapEntity> = if (mapUiState.isInitialState) {
+            getMapInfoUseCase(
+                route = route,
+                isLocalLocation = !mapUiState.checkLocation
+            )
+        } else {
+            val mapData = currentState.mapData
+            getMapInfoUseCase(
+                route = route,
+                isLocalLocation = !mapUiState.checkLocation,
+                distance = mapData.distance,
+                latitude = mapData.mapCenter.latitude,
+                longitude = mapData.mapCenter.longitude
+            )
+        }
+        return flow.safeRetry()
+    }
+
     override fun handleError(throwable: Throwable) {
         super.handleError(throwable)
         updateState { state: MapUiState ->
-            state.copy(isInitialState = false)
+            state.copy(
+                isInitialState = false,
+                checkLocation = false,
+                findStores = false
+            )
         }
 
         throwable.message?.let { message: String ->
