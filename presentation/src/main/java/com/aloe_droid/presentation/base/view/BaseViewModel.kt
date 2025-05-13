@@ -3,7 +3,6 @@ package com.aloe_droid.presentation.base.view
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -46,32 +45,20 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
         _uiState.update(function = function)
     }
 
-    protected fun <Result> CoroutineScope.safeLaunch(
+    protected open fun <Result> CoroutineScope.safeLaunch(
         onSuccess: (Result) -> Unit = {},
         block: suspend () -> Result
     ): Job = viewModelScope.launch {
         runCatching { block() }
             .onSuccess { result: Result -> onSuccess(result) }
-            .onFailure { throwable: Throwable ->
-                if (throwable is CancellationException) Timber.e(t = throwable)
-                else handleError(throwable = throwable)
-            }
+            .onFailure { throwable: Throwable -> handleError(throwable = throwable) }
     }
 
-    protected fun <T> Flow<T>.safeRetry(): Flow<T> =
+    protected open fun <T> Flow<T>.safeRetry(): Flow<T> =
         retryWhen { throwable: Throwable, attempt: Long ->
             handleRetry(throwable = throwable, attempt = attempt)
         }.catch { throwable: Throwable ->
             handleError(throwable = throwable)
-        }
-
-    protected suspend fun <T> Flow<T>.safeCollect(collector: suspend (T) -> Unit) =
-        retryWhen { throwable: Throwable, attempt: Long ->
-            handleRetry(throwable = throwable, attempt = attempt)
-        }.catch { throwable: Throwable ->
-            handleError(throwable = throwable)
-        }.collect { uiState: T ->
-            collector(uiState)
         }
 
     protected open fun handleError(throwable: Throwable) {

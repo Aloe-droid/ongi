@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -69,9 +70,8 @@ class StoreViewModel @Inject constructor(
 
     private fun handleToggleFavorite() = viewModelScope.safeLaunch {
         val storeId: UUID = currentState.id
-        toggleStoreLikeUseCase(storeId = storeId).safeCollect { isLike: Boolean ->
-            toggleFavorite(isLike = isLike)
-        }
+        val isLike: Boolean = toggleStoreLikeUseCase(storeId = storeId).safeRetry().first()
+        toggleFavorite(isLike = isLike)
     }
 
     private fun handleCall(phone: String) {

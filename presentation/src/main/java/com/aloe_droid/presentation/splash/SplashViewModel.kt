@@ -8,6 +8,7 @@ import com.aloe_droid.presentation.splash.contract.effect.SplashEffect
 import com.aloe_droid.presentation.splash.contract.event.SplashEvent
 import com.aloe_droid.presentation.splash.contract.state.SplashUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,10 +33,9 @@ class SplashViewModel @Inject constructor(
 
     private fun checkAuth() {
         viewModelScope.launch {
-            findOrCreateUserUseCase().safeCollect {
-                updateState { splashUiState: SplashUiState ->
-                    splashUiState.copy(isLoading = false, isInitState = false)
-                }
+            findOrCreateUserUseCase().safeRetry().first()
+            updateState { splashUiState: SplashUiState ->
+                splashUiState.copy(isLoading = false, isInitState = false)
             }
         }
     }
