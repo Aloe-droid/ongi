@@ -37,6 +37,7 @@ fun NavGraphBuilder.mapScreen(
     },
     exitTransition = {
         if (targetState.destination.hasRoute<Setting>()) ScreenTransition.slideOutToLeft()
+        else if (targetState.destination.hasRoute<Store>()) ScreenTransition.slideOutToTop()
         else ScreenTransition.slideOutToRight()
     },
 ) {
