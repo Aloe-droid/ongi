@@ -36,7 +36,7 @@ class SearchHistoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insert(history: SearchHistory) = withContext(ioDispatcher) {
-        searchHistoryDao.insert(history.toSearchHistoryEntity())
+        searchHistoryDao.upsert(history.toSearchHistoryEntity())
     }
 
     override suspend fun deleteById(id: Long) = withContext(ioDispatcher) {

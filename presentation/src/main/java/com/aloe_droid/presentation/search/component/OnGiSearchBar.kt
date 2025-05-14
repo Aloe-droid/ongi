@@ -32,7 +32,6 @@ import com.aloe_droid.presentation.base.theme.ExtraLargeImageSize
 import com.aloe_droid.presentation.base.theme.SemiLargePadding
 import com.aloe_droid.presentation.base.theme.SmallPadding
 import com.aloe_droid.presentation.search.data.SearchedStore
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +43,7 @@ fun OnGiSearchBar(
     navigateUp: () -> Unit,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    selectStore: (UUID) -> Unit
+    selectStore: (SearchedStore) -> Unit
 ) {
     val (expanded, setExpanded) = rememberSaveable { mutableStateOf(false) }
 
@@ -89,11 +88,10 @@ fun OnGiSearchBar(
                 val item: SearchedStore = storeItems[index] ?: return@items
                 SearchedStoreScreen(
                     modifier = Modifier.fillMaxWidth(),
-                    id = item.id,
                     name = item.name,
                     category = item.category,
                     distance = item.distance,
-                    onClick = selectStore,
+                    onClick = { selectStore(item) },
                 )
             }
         }

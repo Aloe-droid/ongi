@@ -97,8 +97,8 @@ fun NavGraphBuilder.searchScreen(
                 val event = SearchEvent.SearchQuery(query = query)
                 viewModel.sendEvent(event = event)
             },
-            selectStore = { storeId: UUID ->
-                val event = SearchEvent.SelectStore(id = storeId)
+            selectStore = { store: SearchedStore ->
+                val event = SearchEvent.SelectStore(store = store)
                 viewModel.sendEvent(event = event)
             },
             deleteHistory = { historyId: Long ->

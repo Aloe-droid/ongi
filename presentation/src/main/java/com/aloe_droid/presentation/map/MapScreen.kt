@@ -42,9 +42,12 @@ fun MapScreen(
         BottomSheetDefaults.SheetPeekHeight
     }
 
-    LaunchedEffect(key1 = sheetState.bottomSheetState.currentValue, key2 = selectedMarkerStore) {
+    LaunchedEffect(key1 = selectedMarkerStore) {
         if (selectedMarkerStore != null) {
-            snapshotFlow { sheetState.bottomSheetState.currentValue }.distinctUntilChanged()
+            sheetState.bottomSheetState.partialExpand()
+
+            snapshotFlow { sheetState.bottomSheetState.currentValue }
+                .distinctUntilChanged()
                 .collect {
                     if (it == SheetValue.Expanded) {
                         selectStore(selectedMarkerStore)

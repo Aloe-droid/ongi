@@ -62,6 +62,7 @@ fun StoreInfo(
             model = imageUrl,
             contentDescription = storeName,
             contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.store_image_placeholder),
             error = painterResource(id = R.drawable.store_image_placeholder),
         )
 
