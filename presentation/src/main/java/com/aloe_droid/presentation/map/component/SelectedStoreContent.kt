@@ -45,6 +45,7 @@ fun SelectedStoreContent(
             model = selectedStore.imageUrl,
             contentDescription = selectedStore.name,
             contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.store_image_placeholder),
             error = painterResource(id = R.drawable.store_image_placeholder),
         )
 
