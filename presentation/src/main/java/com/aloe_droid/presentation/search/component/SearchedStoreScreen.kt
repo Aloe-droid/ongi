@@ -16,22 +16,20 @@ import com.aloe_droid.presentation.base.theme.LargeIconSize
 import com.aloe_droid.presentation.base.theme.toDistance
 import com.aloe_droid.presentation.filtered_store.data.StoreCategory
 import com.aloe_droid.presentation.search.data.SearchedStore.Companion.toIconRes
-import java.util.UUID
 
 @Composable
 fun SearchedStoreScreen(
     modifier: Modifier = Modifier,
-    id: UUID,
     name: String,
     distance: Double,
     category: StoreCategory,
-    onClick: (UUID) -> Unit,
+    onClick: () -> Unit,
     iconSize: Dp = LargeIconSize
 ) {
     IconText(
         modifier = modifier,
         text = name,
-        onClick = { onClick(id) },
+        onClick = onClick,
         leadingIcon = {
             Box(
                 modifier = Modifier.size(iconSize),

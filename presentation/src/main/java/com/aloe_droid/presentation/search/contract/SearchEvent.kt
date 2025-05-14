@@ -1,7 +1,7 @@
 package com.aloe_droid.presentation.search.contract
 
 import com.aloe_droid.presentation.base.view.UiContract
-import java.util.UUID
+import com.aloe_droid.presentation.search.data.SearchedStore
 
 sealed class SearchEvent : UiContract.Event {
     data object LoadEvent : SearchEvent()
@@ -9,6 +9,6 @@ sealed class SearchEvent : UiContract.Event {
     data class SearchQuery(val query: String) : SearchEvent()
     data class DeleteQuery(val id: Long) : SearchEvent()
     data object DeleteAllQuery : SearchEvent()
-    data class SelectStore(val id: UUID) : SearchEvent()
+    data class SelectStore(val store: SearchedStore) : SearchEvent()
     data object NavigateUpEvent : SearchEvent()
 }

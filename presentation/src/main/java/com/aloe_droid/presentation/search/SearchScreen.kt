@@ -19,7 +19,6 @@ import com.aloe_droid.presentation.base.theme.SmallPadding
 import com.aloe_droid.presentation.search.component.Histories
 import com.aloe_droid.presentation.search.component.OnGiSearchBar
 import com.aloe_droid.presentation.search.data.SearchedStore
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +30,7 @@ fun SearchScreen(
     navigateUp: () -> Unit,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    selectStore: (UUID) -> Unit,
+    selectStore: (SearchedStore) -> Unit,
     deleteHistory: (Long) -> Unit,
     deleteAllHistory: () -> Unit
 ) {

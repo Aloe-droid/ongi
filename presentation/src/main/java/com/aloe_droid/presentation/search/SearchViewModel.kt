@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import java.util.UUID
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -73,7 +72,7 @@ class SearchViewModel @Inject constructor(
             is SearchEvent.ChangeQuery -> handleChangeQuery(event.query)
             is SearchEvent.SearchQuery -> handleSearchQuery(event.query)
             is SearchEvent.DeleteQuery -> handleDeleteHistory(event.id)
-            is SearchEvent.SelectStore -> handleSelectStore(event.id)
+            is SearchEvent.SelectStore -> handleSelectStore(event.store)
         }
     }
 
@@ -123,8 +122,10 @@ class SearchViewModel @Inject constructor(
         deleteSearchHistoryUseCase(historyId = historyId)
     }
 
-    private fun handleSelectStore(storeId: UUID) {
-        val effect: SearchEffect = SearchEffect.SelectStore(storeId = storeId)
+    private fun handleSelectStore(store: SearchedStore) = viewModelScope.safeLaunch {
+        insertSearchHistoryUseCase(keyword = store.name)
+
+        val effect: SearchEffect = SearchEffect.SelectStore(storeId = store.id)
         sendSideEffect(uiEffect = effect)
     }
 
