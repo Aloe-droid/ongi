@@ -2,16 +2,15 @@ package com.aloe_droid.data.datasource.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.aloe_droid.data.datasource.local.entity.SearchHistoryEntity
 
 @Dao
 interface SearchHistoryDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(history: SearchHistoryEntity)
+    @Upsert
+    suspend fun upsert(history: SearchHistoryEntity)
 
     @Query("SELECT * FROM search_histories ORDER BY timestamp DESC")
     fun getAllHistoriesPaged(): PagingSource<Int, SearchHistoryEntity>
