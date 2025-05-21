@@ -1,17 +1,17 @@
 package com.aloe_droid.presentation.map
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.aloe_droid.presentation.base.theme.MaxBottomSheetHeight
 import com.aloe_droid.presentation.map.component.OnGiNaverMap
@@ -20,7 +20,12 @@ import com.aloe_droid.presentation.map.data.MapData
 import com.aloe_droid.presentation.map.data.StoreMapData
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+
+private const val DEFAULT_DELAY: Long = 300L
 
 @OptIn(ExperimentalNaverMapApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +40,8 @@ fun MapScreen(
     onSearch: () -> Unit,
     selectStore: (StoreMapData) -> Unit
 ) {
-    val sheetState = rememberBottomSheetScaffoldState()
+    val scope: CoroutineScope = rememberCoroutineScope()
+    val sheetState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val peekHeight: Dp = if (selectedMarkerStore != null) {
         MaxBottomSheetHeight
     } else {
@@ -44,13 +50,12 @@ fun MapScreen(
 
     LaunchedEffect(key1 = selectedMarkerStore) {
         if (selectedMarkerStore != null) {
-            sheetState.bottomSheetState.partialExpand()
-
             snapshotFlow { sheetState.bottomSheetState.currentValue }
                 .distinctUntilChanged()
                 .collect {
                     if (it == SheetValue.Expanded) {
                         selectStore(selectedMarkerStore)
+                        delay(DEFAULT_DELAY)
                         sheetState.bottomSheetState.partialExpand()
                     }
                 }
@@ -63,8 +68,6 @@ fun MapScreen(
         sheetPeekHeight = peekHeight,
         sheetContent = {
             OnGiStoreSheetContent(
-                modifier = Modifier
-                    .fillMaxWidth(),
                 selectedStore = selectedMarkerStore,
                 state = storeListState,
                 storeItems = storeItems,
@@ -78,7 +81,15 @@ fun MapScreen(
                 onLocationCheck = onLocationCheck,
                 onChangeMapData = onChangeMapData,
                 onSearch = onSearch,
-                onMarkerClick = onMarkerClick
+                onMarkerClick = { store: StoreMapData ->
+                    scope.launch {
+                        if (sheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                            sheetState.bottomSheetState.partialExpand()
+                        }
+                    }.invokeOnCompletion {
+                        onMarkerClick(store)
+                    }
+                }
             )
         }
     )
