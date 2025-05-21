@@ -33,11 +33,11 @@ fun NavGraphBuilder.storeScreen(
     navigateUp: () -> Unit,
 ) = composable<Store>(
     enterTransition = {
-        if (initialState.destination.hasRoute<Map>()) null
+        if (initialState.destination.hasRoute<Map>()) ScreenTransition.fadeInAnim()
         else ScreenTransition.slideInFromBottom()
     },
     popExitTransition = {
-        if (targetState.destination.hasRoute<Map>()) ScreenTransition.slideOutToBottom()
+        if (targetState.destination.hasRoute<Map>()) ScreenTransition.fadeOutAnim()
         else ScreenTransition.slideOutToBottom()
     }
 ) {

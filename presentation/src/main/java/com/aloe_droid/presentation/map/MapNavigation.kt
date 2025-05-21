@@ -32,12 +32,12 @@ fun NavGraphBuilder.mapScreen(
 ) = composable<Map>(
     enterTransition = {
         if (initialState.destination.hasRoute<Setting>()) ScreenTransition.slideInFromLeft()
-        else if (initialState.destination.hasRoute<Store>()) ScreenTransition.slideInFromTop()
+        else if (initialState.destination.hasRoute<Store>()) ScreenTransition.fadeInAnim()
         else ScreenTransition.slideInFromRight()
     },
     exitTransition = {
         if (targetState.destination.hasRoute<Setting>()) ScreenTransition.slideOutToLeft()
-        else if (targetState.destination.hasRoute<Store>()) ScreenTransition.slideOutToTop()
+        else if (targetState.destination.hasRoute<Store>()) ScreenTransition.fadeOutAnim()
         else ScreenTransition.slideOutToRight()
     },
 ) {
