@@ -18,7 +18,7 @@ import com.aloe_droid.data.datasource.local.entity.StoreQueryEntity
         StoreQueryEntity::class,
         SearchHistoryEntity::class
     ],
-    version = 1
+    version = 2
 )
 abstract class OnGiDatabase : RoomDatabase() {
     abstract fun storeDao(): StoreDao

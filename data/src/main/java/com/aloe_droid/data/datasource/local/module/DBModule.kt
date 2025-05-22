@@ -7,6 +7,7 @@ import com.aloe_droid.data.datasource.local.dao.StoreDao
 import com.aloe_droid.data.datasource.local.dao.StoreQueryCrossRefDao
 import com.aloe_droid.data.datasource.local.dao.StoreQueryDao
 import com.aloe_droid.data.datasource.local.database.OnGiDatabase
+import com.aloe_droid.data.datasource.local.util.Migration1to2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,7 @@ object DBModule {
         @ApplicationContext context: Context
     ): OnGiDatabase = Room
         .databaseBuilder(context = context, klass = OnGiDatabase::class.java, name = "ongi.db")
+        .addMigrations(Migration1to2)
         .build()
 
     @Singleton
