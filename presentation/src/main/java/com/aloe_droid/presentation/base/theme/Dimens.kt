@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val ZeroDp: Dp = 0.dp
-
+val BottomBarHeight: Dp = 64.dp
 val DefaultBorderDp: Dp = 1.dp
 
 val SmallTextSize: TextUnit = 12.sp
@@ -14,7 +14,7 @@ val SemiSmallTextSize: TextUnit = 14.sp
 val DefaultTextSize: TextUnit = 16.sp
 val LargeTextSize: TextUnit = 20.sp
 val LLargeTextSize: TextUnit = 24.sp
-val TitleTextSize: TextUnit = 32.sp
+val TitleTextSize: TextUnit = 28.sp
 val TitleTextHeight: TextUnit = TitleTextSize * 1.2f
 
 val SmallPadding: Dp = 4.dp

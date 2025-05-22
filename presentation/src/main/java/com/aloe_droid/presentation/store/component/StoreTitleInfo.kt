@@ -57,7 +57,7 @@ fun StoreTitleInfo(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                modifier = Modifier.weight(7f),
+                modifier = Modifier.weight(9f),
                 text = storeData.name,
                 fontSize = TitleTextSize,
                 fontWeight = FontWeight.SemiBold,
@@ -65,7 +65,7 @@ fun StoreTitleInfo(
             )
 
             Row(
-                modifier = Modifier.weight(3f),
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {

@@ -1,12 +1,14 @@
 package com.aloe_droid.ongi.ui.navigation.bottom
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavBackStackEntry
@@ -14,6 +16,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.toRoute
+import com.aloe_droid.presentation.base.theme.BottomBarHeight
 import com.aloe_droid.presentation.base.theme.ZeroDp
 import com.aloe_droid.presentation.base.view.UiContract.Route
 import com.aloe_droid.presentation.search.contract.Search
@@ -42,7 +45,10 @@ private fun BottomBar(
     selectedColor: Color = MaterialTheme.colorScheme.onSurface,
     unSelectedColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
 ) {
-    NavigationBar(windowInsets = WindowInsets(bottom = ZeroDp)) {
+    NavigationBar(
+        modifier = Modifier.height(BottomBarHeight),
+        windowInsets = WindowInsets(bottom = ZeroDp)
+    ) {
         bottomRouteList.forEach { bottomRoute: BottomRoute ->
             with(bottomRoute) {
                 val isSelected: Boolean = backStackEntry?.let {
