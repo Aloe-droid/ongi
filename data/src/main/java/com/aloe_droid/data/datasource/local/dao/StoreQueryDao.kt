@@ -26,7 +26,6 @@ interface StoreQueryDao {
     AND sortType = :sortType
     AND distanceRange = :distanceRange
     AND onlyFavorites = :onlyFavorites
-    AND requestRoute = :requestRoute
     LIMIT 1
 """
     )
@@ -38,12 +37,10 @@ interface StoreQueryDao {
         sortType: StoreQuerySortType,
         distanceRange: StoreQueryDistance,
         onlyFavorites: Boolean,
-        requestRoute: String,
     ): StoreQueryEntity?
 
     suspend fun findQueryByStoreQuery(
         storeQuery: StoreQuery,
-        requestRoute: String
     ): StoreQueryEntity? = with(storeQuery) {
         return findQueryByFields(
             latitude = location.latitude.toScale(),
@@ -53,7 +50,6 @@ interface StoreQueryDao {
             sortType = sortType,
             distanceRange = distanceRange,
             onlyFavorites = onlyFavorites,
-            requestRoute = requestRoute
         )
     }
 
@@ -66,18 +62,15 @@ interface StoreQueryDao {
     @Query("DELETE FROM store_queries WHERE id = :id")
     suspend fun deleteQueryById(id: String)
 
-    suspend fun upsert(storeQuery: StoreQuery, requestRoute: String): StoreQueryEntity {
-        val existing: StoreQueryEntity? = findQueryByStoreQuery(
-            storeQuery = storeQuery,
-            requestRoute = requestRoute
-        )
+    suspend fun upsert(storeQuery: StoreQuery): StoreQueryEntity {
+        val existing: StoreQueryEntity? = findQueryByStoreQuery(storeQuery = storeQuery)
 
         return if (existing != null) {
             val entity = existing.copy(queryTime = System.currentTimeMillis())
             updateQuery(entity)
             entity
         } else {
-            val entity = storeQuery.toStoreQueryEntity(requestRoute = requestRoute)
+            val entity = storeQuery.toStoreQueryEntity()
             insertQuery(entity)
             entity
         }
