@@ -12,8 +12,8 @@ import javax.inject.Inject
 
 class UserDataSourceImpl @Inject constructor(private val userAPI: UserAPI) : UserDataSource {
 
-    override fun findOrCreateUser(address: AddressDTO): Flow<UserDTO> = safeApiCallToFlow {
-        userAPI.findOrCreateUser(address)
+    override fun findOrCreateUser(addressDTO: AddressDTO): Flow<UserDTO> = safeApiCallToFlow {
+        userAPI.findOrCreateUser(addressDTO)
     }
 
     override fun deleteUser(idDTO: IdDTO): Flow<Boolean> = safeApiCallToFlow {
