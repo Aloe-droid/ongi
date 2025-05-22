@@ -177,16 +177,11 @@ class MapViewModel @Inject constructor(
     }
 
     private fun buildMapInfoFlow(mapUiState: MapUiState): Flow<StoreMapEntity> {
-        val route = Map::class.java.name
         val flow: Flow<StoreMapEntity> = if (mapUiState.isInitialState) {
-            getMapInfoUseCase(
-                route = route,
-                isLocalLocation = !mapUiState.checkLocation
-            )
+            getMapInfoUseCase(isLocalLocation = !mapUiState.checkLocation)
         } else {
             val mapData = currentState.mapData
             getMapInfoUseCase(
-                route = route,
                 isLocalLocation = !mapUiState.checkLocation,
                 distance = mapData.distance,
                 latitude = mapData.mapCenter.latitude,

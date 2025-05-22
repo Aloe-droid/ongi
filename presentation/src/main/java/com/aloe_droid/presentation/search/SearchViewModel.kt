@@ -11,7 +11,6 @@ import com.aloe_droid.domain.usecase.GetFilteredStoreUseCase
 import com.aloe_droid.domain.usecase.GetSearchHistoryUseCase
 import com.aloe_droid.domain.usecase.InsertSearchHistoryUseCase
 import com.aloe_droid.presentation.base.view.BaseViewModel
-import com.aloe_droid.presentation.search.contract.Search
 import com.aloe_droid.presentation.search.contract.SearchEffect
 import com.aloe_droid.presentation.search.contract.SearchEvent
 import com.aloe_droid.presentation.search.contract.SearchUiState
@@ -44,9 +43,8 @@ class SearchViewModel @Inject constructor(
             .map { it.searchQuery }
             .distinctUntilChanged()
             .flatMapLatest { query ->
-                val route: String = Search::class.java.name
                 if (query.isBlank()) flowOf(PagingData.empty<Store>())
-                else getFilteredStoreUseCase(searchQuery = query, route = route).safeRetry()
+                else getFilteredStoreUseCase(searchQuery = query).safeRetry()
             }.map { pagingData: PagingData<Store> -> pagingData.toPagingSearchStore() }
             .cachedIn(viewModelScope)
             .toViewModelState(initValue = PagingData.empty())

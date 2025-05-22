@@ -8,7 +8,6 @@ import com.aloe_droid.presentation.base.view.BaseViewModel
 import com.aloe_droid.presentation.filtered_store.data.StoreDistanceRange
 import com.aloe_droid.presentation.filtered_store.data.StoreFilter
 import com.aloe_droid.presentation.filtered_store.data.StoreSortType
-import com.aloe_droid.presentation.home.contract.Home
 import com.aloe_droid.presentation.home.contract.HomeEffect
 import com.aloe_droid.presentation.home.contract.HomeEvent
 import com.aloe_droid.presentation.home.contract.HomeUiData
@@ -38,7 +37,7 @@ class HomeViewModel @Inject constructor(
         uiState.map { state: HomeUiState -> state.shouldFetchHomeData }
             .distinctUntilChanged()
             .filter { shouldFetchHomeData: Boolean -> shouldFetchHomeData }
-            .flatMapLatest { getHomeInfoUseCase(route = Home::class.java.name).safeRetry() }
+            .flatMapLatest { getHomeInfoUseCase().safeRetry() }
             .onEach { homeEntity: HomeEntity -> checkEntity(homeEntity) }
             .map { homeEntity: HomeEntity -> homeEntity.toHomeData() }
             .toViewModelState(initValue = HomeUiData())
