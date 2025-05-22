@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val ZeroDp: Dp = 0.dp
-
+val BottomBarHeight: Dp = 64.dp
 val DefaultBorderDp: Dp = 1.dp
 
 val SmallTextSize: TextUnit = 12.sp
