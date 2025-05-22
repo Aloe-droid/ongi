@@ -25,10 +25,10 @@ import com.aloe_droid.presentation.base.component.PulsingCircularIndicator
 import com.aloe_droid.presentation.base.theme.DefaultImageRatio
 import com.aloe_droid.presentation.base.theme.DefaultTextSize
 import com.aloe_droid.presentation.base.theme.LargePadding
+import com.aloe_droid.presentation.base.theme.LargeTextSize
 import com.aloe_droid.presentation.base.theme.SemiLargePadding
 import com.aloe_droid.presentation.base.theme.SmallPadding
 import com.aloe_droid.presentation.base.theme.TitleTextHeight
-import com.aloe_droid.presentation.base.theme.TitleTextSize
 import com.aloe_droid.presentation.base.theme.toFavorite
 import com.aloe_droid.presentation.map.data.StoreMapData
 
@@ -58,15 +58,15 @@ fun SelectedStoreContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                modifier = Modifier.weight(7f),
+                modifier = Modifier.weight(9f),
                 text = selectedStore.name,
-                fontSize = TitleTextSize,
+                fontSize = LargeTextSize,
                 fontWeight = FontWeight.SemiBold,
                 lineHeight = TitleTextHeight
             )
 
             Row(
-                modifier = Modifier.weight(3f),
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
