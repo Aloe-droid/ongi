@@ -50,18 +50,6 @@ object ScreenTransition {
             animationSpec = tween(SLIDE_TIME)
         )
 
-    fun slideInFromTop(): EnterTransition =
-        slideInVertically(
-            initialOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
-    fun slideOutToTop(): ExitTransition =
-        slideOutVertically(
-            targetOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
     fun fadeInAnim(): EnterTransition = fadeIn(animationSpec = tween(FADE_TIME))
     fun fadeOutAnim(): ExitTransition = fadeOut(animationSpec = tween(FADE_TIME))
 
