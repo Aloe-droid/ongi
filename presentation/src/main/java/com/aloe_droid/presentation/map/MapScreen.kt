@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,7 +43,12 @@ fun MapScreen(
     selectStore: (StoreMapData) -> Unit
 ) {
     val scope: CoroutineScope = rememberCoroutineScope()
-    val sheetState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    val sheetState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            skipHiddenState = false
+        )
+    )
+
     val peekHeight: Dp = if (selectedMarkerStore != null) {
         DetailStoreSheetHeight
     } else {
@@ -82,12 +88,16 @@ fun MapScreen(
                 storeItems = storeItems,
                 onLocationCheck = onLocationCheck,
                 onChangeMapData = onChangeMapData,
-                onSearch = onSearch,
+                onSearch = {
+                    scope.launch {
+                        sheetState.bottomSheetState.partialExpand()
+                    }.invokeOnCompletion {
+                        onSearch()
+                    }
+                },
                 onMarkerClick = { store: StoreMapData ->
                     scope.launch {
-                        if (sheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
-                            sheetState.bottomSheetState.partialExpand()
-                        }
+                        sheetState.bottomSheetState.partialExpand()
                     }.invokeOnCompletion {
                         onMarkerClick(store)
                     }
