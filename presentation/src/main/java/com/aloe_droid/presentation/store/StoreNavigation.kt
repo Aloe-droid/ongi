@@ -34,11 +34,11 @@ fun NavGraphBuilder.storeScreen(
 ) = composable<Store>(
     enterTransition = {
         if (initialState.destination.hasRoute<Map>()) ScreenTransition.fadeInAnim()
-        else ScreenTransition.slideInFromBottom()
+        else ScreenTransition.slideInFromRight()
     },
     popExitTransition = {
         if (targetState.destination.hasRoute<Map>()) ScreenTransition.fadeOutAnim()
-        else ScreenTransition.slideOutToBottom()
+        else ScreenTransition.slideOutToRight()
     }
 ) {
     val context: Context = LocalContext.current

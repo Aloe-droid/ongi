@@ -29,7 +29,7 @@ class GetMapInfoUseCase @Inject constructor(
         .filter { it != StoreQueryDistance.NONE }
         .sortedBy { it.maxKm }
 
-    operator fun invoke(route: String, isLocalLocation: Boolean): Flow<StoreMapEntity> {
+    operator fun invoke(isLocalLocation: Boolean): Flow<StoreMapEntity> {
         val userFlow: Flow<User> = userStoreRepository.getUser().filterNotNull()
         val locationFlow: Flow<Location> = if (isLocalLocation) {
             locationRepository.getLocalLocation()
@@ -50,7 +50,7 @@ class GetMapInfoUseCase @Inject constructor(
                 size = Integer.MAX_VALUE - 1
             )
         }.flatMapLatest { storeQuery ->
-            storeRepository.getStoreList(storeQuery = storeQuery, requestRoute = route)
+            storeRepository.getStoreList(storeQuery = storeQuery)
                 .map { storeList: List<Store> -> storeQuery.location to storeList }
         }.map { (location: Location, storeList: List<Store>) ->
             StoreMapEntity(location = location, stores = storeList)
@@ -58,7 +58,6 @@ class GetMapInfoUseCase @Inject constructor(
     }
 
     operator fun invoke(
-        route: String,
         isLocalLocation: Boolean,
         distance: Float,
         latitude: Double,
@@ -85,7 +84,7 @@ class GetMapInfoUseCase @Inject constructor(
                 size = Integer.MAX_VALUE - 1
             )
         }.flatMapLatest { storeQuery ->
-            storeRepository.getStoreList(storeQuery = storeQuery, requestRoute = route)
+            storeRepository.getStoreList(storeQuery = storeQuery)
         }.combine(locationFlow) { storeList: List<Store>, location: Location ->
             StoreMapEntity(location = location, stores = storeList)
         }

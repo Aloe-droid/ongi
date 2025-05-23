@@ -38,7 +38,6 @@ class FilteredStoreViewModel @Inject constructor(
         uiState.distinctUntilChangedBy { it.storeFilter }
             .flatMapLatest { filterState: FilteredStoreUiState ->
                 getFilteredStoreUseCase(
-                    route = FilteredStore::class.java.name,
                     category = filterState.storeFilter.category.toStoreQueryCategory(),
                     sortType = filterState.storeFilter.sortType.toStoreQuerySortType(),
                     distanceRange = filterState.storeFilter.distanceRange.toStoreQueryDistance(),

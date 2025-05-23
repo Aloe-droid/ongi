@@ -51,11 +51,8 @@ class StoreRepositoryImpl @Inject constructor(
 ) : StoreRepository {
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
-    override fun getStoreList(
-        storeQuery: StoreQuery,
-        requestRoute: String
-    ): Flow<List<Store>> = flow {
-        val queryId = queryDao.upsert(storeQuery = storeQuery, requestRoute = requestRoute).id
+    override fun getStoreList(storeQuery: StoreQuery): Flow<List<Store>> = flow {
+        val queryId = queryDao.upsert(storeQuery = storeQuery).id
         val mediator: StoreRemoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId)
         val result: RemoteMediator.MediatorResult = mediator.load(
             loadType = LoadType.REFRESH,
@@ -75,11 +72,8 @@ class StoreRepositoryImpl @Inject constructor(
     }.flowOn(ioDispatcher)
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getStoreStream(
-        storeQuery: StoreQuery,
-        requestRoute: String
-    ): Flow<PagingData<Store>> = flow {
-        val queryId = queryDao.upsert(storeQuery = storeQuery, requestRoute = requestRoute).id
+    override fun getStoreStream(storeQuery: StoreQuery): Flow<PagingData<Store>> = flow {
+        val queryId = queryDao.upsert(storeQuery = storeQuery).id
         val flow: Flow<PagingData<Store>> = Pager(
             config = PagingConfig(pageSize = storeQuery.size),
             remoteMediator = storeRemoteMediatorFactory.create(storeQuery, queryId),

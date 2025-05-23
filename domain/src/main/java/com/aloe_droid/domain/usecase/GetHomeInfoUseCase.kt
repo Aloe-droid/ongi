@@ -26,7 +26,7 @@ class GetHomeInfoUseCase @Inject constructor(
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(route: String): Flow<HomeEntity> = combine(
+    operator fun invoke(): Flow<HomeEntity> = combine(
         userStoreRepository.getUser(),
         locationRepository.getLocation()
     ) { user: User?, location: Location ->
@@ -36,9 +36,9 @@ class GetHomeInfoUseCase @Inject constructor(
         .flatMapLatest { (user: User, location: Location) ->
             val bannerListFlow = bannerRepository.getBannerList()
             val favoriteStoreListFlow =
-                getFavoriteStoreList(route = route, location = location, userId = user.id)
+                getFavoriteStoreList(location = location, userId = user.id)
             val nearbyStoreListFlow =
-                getNearbyStoreList(route = route, location = location, userId = user.id)
+                getNearbyStoreList(location = location, userId = user.id)
 
             combine(
                 bannerListFlow,
@@ -55,7 +55,6 @@ class GetHomeInfoUseCase @Inject constructor(
         }
 
     private fun getNearbyStoreList(
-        route: String,
         location: Location,
         userId: UUID
     ): Flow<List<Store>> {
@@ -66,11 +65,10 @@ class GetHomeInfoUseCase @Inject constructor(
             size = HOME_STORE_SIZE
         )
 
-        return storeRepository.getStoreList(storeQuery = query, requestRoute = route)
+        return storeRepository.getStoreList(storeQuery = query)
     }
 
     private fun getFavoriteStoreList(
-        route: String,
         location: Location,
         userId: UUID
     ): Flow<List<Store>> {
@@ -81,7 +79,7 @@ class GetHomeInfoUseCase @Inject constructor(
             size = HOME_STORE_SIZE
         )
 
-        return storeRepository.getStoreList(storeQuery = query, requestRoute = route)
+        return storeRepository.getStoreList(storeQuery = query)
     }
 
     companion object {

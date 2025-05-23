@@ -37,9 +37,14 @@ val SmallCornerRadius: Dp = 8.dp
 val DefaultCornerRadius: Dp = 15.dp
 
 val MaxGridHeight: Dp = 300.dp
+
+val StoreListSheetHeight: Dp = 64.dp
+val DetailStoreSheetHeight: Dp = 300.dp
 val MaxBottomSheetHeight: Dp = 300.dp
 
 val DefaultTopBarMaxHeight: Dp = 50.dp
+
+val DefaultShadowElevation: Dp = 16.dp
 
 const val DefaultGridCellSize: Int = 5
 const val DefaultItemRowSize: Int = 5

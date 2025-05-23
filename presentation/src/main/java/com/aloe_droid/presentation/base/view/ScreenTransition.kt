@@ -6,9 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 
 object ScreenTransition {
     private const val SLIDE_TIME: Int = 600
@@ -35,30 +33,6 @@ object ScreenTransition {
     fun slideOutToRight(): ExitTransition =
         slideOutHorizontally(
             targetOffsetX = { fullWidth -> fullWidth },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
-    fun slideInFromBottom(): EnterTransition =
-        slideInVertically(
-            initialOffsetY = { fullHeight -> fullHeight },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
-    fun slideOutToBottom(): ExitTransition =
-        slideOutVertically(
-            targetOffsetY = { fullHeight -> fullHeight },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
-    fun slideInFromTop(): EnterTransition =
-        slideInVertically(
-            initialOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(SLIDE_TIME)
-        )
-
-    fun slideOutToTop(): ExitTransition =
-        slideOutVertically(
-            targetOffsetY = { fullHeight -> -fullHeight },
             animationSpec = tween(SLIDE_TIME)
         )
 
