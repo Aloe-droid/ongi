@@ -26,7 +26,7 @@ class SettingViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiData: StateFlow<SettingUiData> by lazy {
         uiState
-            .flatMapLatest { getStoreSyncInfoUseCase().safeRetry() }
+            .flatMapLatest { getStoreSyncInfoUseCase().handleError() }
             .onEach { completeInitialState() }
             .map { storeSyncEntity: StoreSyncEntity -> storeSyncEntity.toSettingData() }
             .toViewModelState(initValue = SettingUiData())

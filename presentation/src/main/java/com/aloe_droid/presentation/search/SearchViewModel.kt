@@ -44,7 +44,7 @@ class SearchViewModel @Inject constructor(
             .distinctUntilChanged()
             .flatMapLatest { query ->
                 if (query.isBlank()) flowOf(PagingData.empty<Store>())
-                else getFilteredStoreUseCase(searchQuery = query).safeRetry()
+                else getFilteredStoreUseCase(searchQuery = query).handleError()
             }.map { pagingData: PagingData<Store> -> pagingData.toPagingSearchStore() }
             .cachedIn(viewModelScope)
             .toViewModelState(initValue = PagingData.empty())
@@ -53,7 +53,7 @@ class SearchViewModel @Inject constructor(
     val searchHistory: StateFlow<PagingData<SearchHistory>> by lazy {
         uiState
             .distinctUntilChangedBy { it.isInitialState }
-            .flatMapLatest { getSearchHistoryUseCase().safeRetry() }
+            .flatMapLatest { getSearchHistoryUseCase().handleError() }
             .cachedIn(viewModelScope)
             .toViewModelState(initValue = PagingData.empty())
     }

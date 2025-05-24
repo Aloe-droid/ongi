@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
         uiState.map { state: HomeUiState -> state.shouldFetchHomeData }
             .distinctUntilChanged()
             .filter { shouldFetchHomeData: Boolean -> shouldFetchHomeData }
-            .flatMapLatest { getHomeInfoUseCase().safeRetry() }
+            .flatMapLatest { getHomeInfoUseCase().handleError() }
             .onEach { homeEntity: HomeEntity -> checkEntity(homeEntity) }
             .map { homeEntity: HomeEntity -> homeEntity.toHomeData() }
             .toViewModelState(initValue = HomeUiData())
