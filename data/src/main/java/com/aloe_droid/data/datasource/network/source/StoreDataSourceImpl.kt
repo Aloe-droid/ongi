@@ -5,7 +5,8 @@ import com.aloe_droid.data.datasource.dto.store.StoreDTO
 import com.aloe_droid.data.datasource.dto.store.StoreDetailDTO
 import com.aloe_droid.data.datasource.dto.store.StorePage
 import com.aloe_droid.data.datasource.network.api.StoreAPI
-import com.aloe_droid.data.datasource.network.util.ApiExt.Companion.safeApiCallToFlow
+import com.aloe_droid.data.datasource.network.util.ApiUtil.safeApiCallToFlow
+import com.aloe_droid.data.datasource.network.util.FlowUtil.retryOnIOException
 import com.aloe_droid.domain.entity.StoreQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -16,7 +17,7 @@ class StoreDataSourceImpl @Inject constructor(private val storeAPI: StoreAPI) : 
 
     override fun getStoreList(storeQuery: StoreQuery): Flow<StorePage> = safeApiCallToFlow {
         storeAPI.getStores(storeQuery.toQueryMap().mapValues { it.value.toString() })
-    }
+    }.retryOnIOException()
 
     override fun getStore(
         id: UUID,
@@ -24,21 +25,21 @@ class StoreDataSourceImpl @Inject constructor(private val storeAPI: StoreAPI) : 
         longitude: Double
     ): Flow<StoreDTO> = safeApiCallToFlow {
         storeAPI.getStore(id = id, latitude = latitude, longitude = longitude)
-    }
+    }.retryOnIOException()
 
     override fun getStoreDetail(id: UUID): Flow<StoreDetailDTO> = safeApiCallToFlow {
         storeAPI.getStoreDetail(id = id)
-    }
+    }.retryOnIOException()
 
     override fun getStoreMenus(id: UUID): Flow<List<MenuDTO>> = safeApiCallToFlow {
         storeAPI.getStoreMenus(id = id)
-    }
+    }.retryOnIOException()
 
     override fun getStoreCount(): Flow<Long> = safeApiCallToFlow {
         storeAPI.getStoreCount()
-    }
+    }.retryOnIOException()
 
     override fun getStoreSyncTime(): Flow<Instant> = safeApiCallToFlow {
         storeAPI.getStoreSyncTime()
-    }
+    }.retryOnIOException()
 }

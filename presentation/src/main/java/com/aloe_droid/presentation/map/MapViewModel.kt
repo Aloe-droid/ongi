@@ -188,7 +188,7 @@ class MapViewModel @Inject constructor(
                 longitude = mapData.mapCenter.longitude
             )
         }
-        return flow.safeRetry()
+        return flow.handleError()
     }
 
     override fun handleError(throwable: Throwable) {

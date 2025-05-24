@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -41,7 +41,7 @@ class StoreViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiData: StateFlow<StoreUiData> by lazy {
         uiState
-            .flatMapLatest { getStoreInfoUseCase(storeId = currentState.id).safeRetry() }
+            .flatMapLatest { getStoreInfoUseCase(storeId = currentState.id).handleError() }
             .onEach { completeInitialState() }
             .map { storeEntity: StoreEntity -> StoreUiData(store = storeEntity.toStoreData()) }
             .combineWithLocalUiData()
@@ -70,8 +70,8 @@ class StoreViewModel @Inject constructor(
 
     private fun handleToggleFavorite() = viewModelScope.safeLaunch {
         val storeId: UUID = currentState.id
-        val isLike: Boolean = toggleStoreLikeUseCase(storeId = storeId).safeRetry().first()
-        toggleFavorite(isLike = isLike)
+        val isLike: Boolean? = toggleStoreLikeUseCase(storeId = storeId).handleError().firstOrNull()
+        isLike?.let { toggleFavorite(isLike = isLike) }
     }
 
     private fun handleCall(phone: String) {

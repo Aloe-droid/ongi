@@ -7,19 +7,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ChannelResult
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.IOException
 
 abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Event, UiEffect : UiContract.SideEffect>(
     savedStateHandle: SavedStateHandle
@@ -54,23 +51,12 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
             .onFailure { throwable: Throwable -> handleError(throwable = throwable) }
     }
 
-    protected open fun <T> Flow<T>.safeRetry(): Flow<T> =
-        retryWhen { throwable: Throwable, attempt: Long ->
-            handleRetry(throwable = throwable, attempt = attempt)
-        }.catch { throwable: Throwable ->
-            handleError(throwable = throwable)
-        }
+    protected open fun <T> Flow<T>.handleError(): Flow<T> = catch { throwable: Throwable ->
+        handleError(throwable = throwable)
+    }
 
     protected open fun handleError(throwable: Throwable) {
         Timber.e(t = throwable)
-    }
-
-    protected open suspend fun handleRetry(throwable: Throwable, attempt: Long): Boolean {
-        if (attempt >= MAX_RETRY) return false
-        if (throwable !is IOException) return false
-
-        delay(RETRY_INTERVAL)
-        return true
     }
 
     protected fun <T> Flow<T>.toViewModelState(initValue: T) = stateIn(
@@ -84,8 +70,6 @@ abstract class BaseViewModel<UiState : UiContract.State, UiEvent : UiContract.Ev
     abstract fun handleEvent(event: UiEvent)
 
     companion object {
-        private const val MAX_RETRY: Int = 2
-        private const val RETRY_INTERVAL: Long = 1_000L
 
         protected const val DEFAULT_DEBOUNCE: Long = 300L
         protected const val TIME_OUT: Long = 5_000L
