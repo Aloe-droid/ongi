@@ -6,38 +6,42 @@
 
 👉 [Play Store에서 다운로드](https://play.google.com/store/apps/details?id=com.aloe_droid.ongi)
 
----
+
+<br/>
 
 ## 📌 기술 스택
 
-- **언어**: Kotlin 
+- **언어**: Kotlin
 - **UI**: Jetpack Compose (Material 3)
 - **의존성 주입**: Hilt
 - **아키텍처**: Clean Architecture + Multi-module
 - **비동기 처리**: Kotlin Coroutines
 - **데이터 저장소**: Room + Paging3, DataStore Preferences
 - **지도/위치**: Naver Map SDK, naver-map-compose, Google Play Services Location
-- **이미지 로딩**: Coil 
+- **이미지 로딩**: Coil
 - **네트워크 통신**: Retrofit2 + OkHttp + kotlinx.serialization
 - **로깅**: Timber
 
 ---
+<br/>
 
 ## 🧱 아키텍처 및 모듈 구성
 
 - **아키텍처 패턴**: MVI (State / SideEffect / Event 기반 단방향 흐름)
 - **설계 원칙**: Clean Architecture
 - **모듈 구성**:
-  - `:app` – 앱 실행, DI 설정, Navigation 구성
-  - `:presentation` – UI 계층 (Jetpack Compose 기반 MVI)
-  - `:domain` – UseCase, Repository 인터페이스 등 비즈니스 로직 정의
-  - `:data` – API, DB 등 실제 데이터 소스 구현 (Repository 구현 포함)
+    - `:app` – 앱 실행, DI 설정, Navigation 구성
+    - `:presentation` – UI 계층 (Jetpack Compose 기반 MVI)
+    - `:domain` – UseCase, Repository 인터페이스 등 비즈니스 로직 정의
+    - `:data` – API, DB 등 실제 데이터 소스 구현 (Repository 구현 포함)
 
 ---
+<br/>
 
 ## 📁 폴더 구조
 
-###  전체 구조
+### 전체 구조
+
 ```
 ongi/
 ├── app/                    
@@ -45,6 +49,7 @@ ongi/
 ├── domain/                 
 └── presentation/      
 ```
+
 <details>
  <summary>📱 app 모듈 상세 구조</summary>
 
@@ -63,6 +68,7 @@ app/
 ├── src/androidTest/
 └── src/test/  
 ```
+
 </details>
 
 <details> 
@@ -105,6 +111,7 @@ data/
 ├── src/androidTest/
 └── src/test/
 ```
+
 </details>
 
 <details> 
@@ -118,6 +125,7 @@ domain/
     ├── repository/           # 리포지토리 인터페이스
     └── usecase/              # 비즈니스 로직
 ```
+
 </details>
 
 
@@ -184,4 +192,20 @@ presentation/
 ├── src/androidTest/
 └── src/test/
 ```
+
 </details>
+
+---
+<br/>
+
+## 📖 학습 노트 (Learning Notes)
+
+프로젝트를 진행하며 마주친 기술적 고민과 해결 과정을 정리했습니다. 자세한 내용은 노션 문서를 참고해주세요.
+
+| 주제                  | 요약                                             | 링크                                                                                                      |
+|---------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| 초기 데이터 로딩           | 원격 데이터의 호출 시점 최적화                              | [📄 보기](https://steadfast-vermicelli-58d.notion.site/1d9e1a802a7080c7aad3dbe2a6059d49?pvs=74)           |
+| 페이징 정책              | Remote DB + Local DB 결합                        | [📄 보기](https://steadfast-vermicelli-58d.notion.site/1e7e1a802a708023bcf2fec7e0fab4b8)                  |
+| Smart Recomposition | `@Stable`과 `@Immutable`의 차이와 Compose 리컴포지션 최적화 | [📄 보기](https://steadfast-vermicelli-58d.notion.site/Stable-Immutable-1fce1a802a7080588769ed60e0deabfa) |
+
+---
