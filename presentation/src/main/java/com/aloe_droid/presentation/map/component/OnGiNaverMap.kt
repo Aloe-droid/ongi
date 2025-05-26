@@ -24,7 +24,7 @@ import com.naver.maps.map.util.MarkerIcons
 fun OnGiNaverMap(
     location: LatLng,
     maxZoom: Double = 20.0,
-    minZoom: Double = 10.0,
+    minZoom: Double = 7.0,
     storeItems: List<StoreMapData>,
     onLocationCheck: () -> Unit,
     onChangeMapData: (MapData) -> Unit,
