@@ -21,8 +21,8 @@ android {
         applicationId = "com.aloe_droid.ongi"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
-        versionName = "1.0.3"
+        versionCode = 7
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "CLIENT_ID", properties.getProperty("nClientId"))
