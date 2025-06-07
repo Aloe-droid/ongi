@@ -17,6 +17,9 @@ val LLargeTextSize: TextUnit = 24.sp
 val TitleTextSize: TextUnit = 28.sp
 val TitleTextHeight: TextUnit = TitleTextSize * 1.2f
 
+val FixedSmallTextSize: Dp = 12.dp
+val FixedSmallLineHeight: Dp = FixedSmallTextSize * 1.2f
+
 val SmallPadding: Dp = 4.dp
 val DefaultPadding: Dp = 8.dp
 val SemiLargePadding: Dp = 16.dp

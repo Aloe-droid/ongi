@@ -10,13 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.toRoute
 import com.aloe_droid.presentation.base.theme.BottomBarHeight
+import com.aloe_droid.presentation.base.theme.FixedSmallLineHeight
+import com.aloe_droid.presentation.base.theme.FixedSmallTextSize
 import com.aloe_droid.presentation.base.theme.ZeroDp
 import com.aloe_droid.presentation.base.view.UiContract.Route
 import com.aloe_droid.presentation.search.contract.Search
@@ -43,7 +48,9 @@ private fun BottomBar(
     backStackEntry: NavBackStackEntry?,
     selectRoute: (Route) -> Unit,
     selectedColor: Color = MaterialTheme.colorScheme.onSurface,
-    unSelectedColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+    unSelectedColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+    fontSize: TextUnit = FixedSmallTextSize.toSp(),
+    lineHeight: TextUnit = FixedSmallLineHeight.toSp()
 ) {
     NavigationBar(
         modifier = Modifier.height(BottomBarHeight),
@@ -67,13 +74,25 @@ private fun BottomBar(
                             tint = color
                         )
                     },
-                    label = { Text(text = name, color = color) },
+                    label = {
+                        Text(
+                            text = name,
+                            color = color,
+                            fontSize = fontSize,
+                            lineHeight = lineHeight
+                        )
+                    },
                     selected = isSelected,
                     onClick = { selectRoute(route) }
                 )
             }
         }
     }
+}
+
+@Composable
+private fun Dp.toSp() = with(LocalDensity.current) {
+    this@toSp.toSp()
 }
 
 private fun NavBackStackEntry?.isBottomSearch(): Boolean {
