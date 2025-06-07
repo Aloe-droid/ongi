@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
 @Composable
 fun OnGiBottomBar(
     bottomRouteList: List<BottomRoute>,
-    backStackEntry: NavBackStackEntry?,
+    backStackEntry: NavBackStackEntry,
     selectRoute: (Route) -> Unit
 ) {
     if (backStackEntry.isBottomSearch() || backStackEntry.isNowBottomRoute()) {
@@ -45,7 +45,7 @@ fun OnGiBottomBar(
 @Composable
 private fun BottomBar(
     bottomRouteList: List<BottomRoute>,
-    backStackEntry: NavBackStackEntry?,
+    backStackEntry: NavBackStackEntry,
     selectRoute: (Route) -> Unit,
     selectedColor: Color = MaterialTheme.colorScheme.onSurface,
     unSelectedColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
@@ -58,10 +58,8 @@ private fun BottomBar(
     ) {
         bottomRouteList.forEach { bottomRoute: BottomRoute ->
             with(bottomRoute) {
-                val isSelected: Boolean = backStackEntry?.let {
-                    backStackEntry.destination.hierarchy.any {
-                        it.hasRoute(bottomRoute.route::class)
-                    }
+                val isSelected: Boolean = backStackEntry.destination.hierarchy.any {
+                    it.hasRoute(route::class)
                 } == true
                 val res: Int = if (isSelected) selectedIconRes else unSelectedIconRes
                 val color: Color = if (isSelected) selectedColor else unSelectedColor
@@ -95,8 +93,7 @@ private fun Dp.toSp() = with(LocalDensity.current) {
     this@toSp.toSp()
 }
 
-private fun NavBackStackEntry?.isBottomSearch(): Boolean {
-    if (this == null) return false
+private fun NavBackStackEntry.isBottomSearch(): Boolean {
     val search: Search? = runCatching {
         toRoute<Search>()
     }.getOrNull()
@@ -104,8 +101,7 @@ private fun NavBackStackEntry?.isBottomSearch(): Boolean {
     return !(search == null || !search.isFromBottomNavigate)
 }
 
-private fun NavBackStackEntry?.isNowBottomRoute(): Boolean =
-    this?.destination?.containsBottomRoute() == true
+private fun NavBackStackEntry.isNowBottomRoute(): Boolean = destination.containsBottomRoute()
 
 private fun NavDestination.containsBottomRoute(): Boolean {
     val bottomList: List<KClass<*>> = BottomRoute.DefaultBottomList.map { it.route::class }

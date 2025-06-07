@@ -55,19 +55,21 @@ fun OnGiApp(navController: NavHostController = rememberNavController()) {
             }
         },
         bottomBar = {
-            OnGiBottomBar(
-                bottomRouteList = BottomRoute.DefaultBottomList,
-                backStackEntry = backStackEntry,
-                selectRoute = { route: UiContract.Route ->
-                    navController.safeMove {
-                        navigate(route) {
-                            popUpTo(graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
+            backStackEntry?.let {
+                OnGiBottomBar(
+                    backStackEntry = it,
+                    bottomRouteList = BottomRoute.DefaultBottomList,
+                    selectRoute = { route: UiContract.Route ->
+                        navController.safeMove {
+                            navigate(route) {
+                                popUpTo(graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding: PaddingValues ->
         OnGiNavHost(
